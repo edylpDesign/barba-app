@@ -55,6 +55,59 @@
       min-height: 100vh;
     }
 
+    /* PANTALLA COMPLETA DE INICIO DE SESIÓN */
+    #login-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--primary);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .login-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 340px;
+      border-radius: 16px;
+      padding: 24px 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    .login-logo-container {
+      width: 64px;
+      height: 64px;
+      background: #ffffff;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin-bottom: 12px;
+    }
+
+    .login-brand-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    .login-brand-sub {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--secondary);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    /* Header */
     .app-header {
       background: var(--primary);
       color: #fff;
@@ -108,30 +161,30 @@
     }
     .cloud-dot.online { background: #4ade80; box-shadow: 0 0 5px #4ade80; }
 
-    .role-switcher {
+    .header-user-badge {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       background: rgba(255,255,255,0.14);
       padding: 4px 8px;
       border-radius: 20px;
-    }
-
-    .role-switcher select {
-      background: transparent;
-      border: none;
       color: #fff;
       font-size: 11px;
       font-weight: 700;
-      outline: none;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: none;
+      color: #fca5a5;
+      font-size: 12px;
       cursor: pointer;
-      max-width: 130px;
+      padding: 2px 4px;
+      display: flex;
+      align-items: center;
     }
 
-    .role-switcher select option {
-      color: #000;
-    }
-
+    /* Views */
     .content-view {
       flex: 1;
       padding: 14px 14px 85px 14px;
@@ -142,6 +195,7 @@
       display: block;
     }
 
+    /* Calendar */
     .calendar-card {
       background: #fff;
       border: 1px solid var(--border);
@@ -263,6 +317,7 @@
     .dot-electricidad { background-color: #dc2626; }
     .dot-construccion { background-color: #7e22ce; }
 
+    /* Cards */
     .order-card, .client-card, .tech-card {
       background: #fff;
       border: 1px solid var(--border);
@@ -337,8 +392,10 @@
       font-weight: 600;
     }
 
+    /* Forms */
     .form-group {
       margin-bottom: 10px;
+      text-align: left;
     }
 
     .form-group label {
@@ -370,6 +427,7 @@
       cursor: not-allowed;
     }
 
+    /* Filter Pills */
     .filter-pills {
       display: flex;
       gap: 6px;
@@ -602,34 +660,6 @@
     .nav-item i { font-size: 16px; }
     .nav-item.active { color: var(--secondary); }
 
-    .pin-modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.65);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 20px;
-    }
-
-    .pin-modal-content {
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      width: 100%;
-      max-width: 320px;
-      text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-    }
-
-    .pin-input {
-      letter-spacing: 6px;
-      font-size: 20px;
-      text-align: center;
-      margin: 12px 0;
-    }
-
     .admin-only {
       display: block;
     }
@@ -639,6 +669,45 @@
   </style>
 </head>
 <body class="is-employee">
+
+<!-- PANTALLA DE INICIO DE SESIÓN OBLIGATORIO -->
+<div id="login-overlay">
+  <div class="login-card">
+    <div class="login-logo-container">
+      <svg viewBox="0 0 120 120" width="50" height="50">
+        <path d="M48 24 L22 38 L48 38 Z" fill="#e67e22"/>
+        <path d="M48 18 L53 38 L43 38 Z" fill="#e67e22"/>
+        <path d="M50 38 L25 38 L25 68 C25 80 40 92 50 96 L50 38 Z" fill="#e67e22"/>
+        <path d="M50 38 L75 38 L75 68 C75 80 60 92 50 96 L50 38 Z" fill="#0b2545"/>
+        <rect x="36" y="44" width="28" height="8" rx="2" fill="#ffffff"/>
+        <rect x="47" y="52" width="6" height="18" rx="1" fill="#ffffff"/>
+        <polygon points="34,60 40,60 36,68 42,68 33,78 36,70 31,70" fill="#ffffff"/>
+        <path d="M64 68 C64 63 67 60 67 60 C67 60 70 63 70 68 C70 71 67 72 67 72 C67 72 64 71 64 68 Z" fill="#ffffff"/>
+        <path d="M35 78 C40 85 45 92 50 102 C55 92 60 85 65 78 C60 82 55 86 50 86 C45 86 40 82 35 78 Z" fill="#0b2545"/>
+      </svg>
+    </div>
+    <div class="login-brand-title">BARBA CONSTRUCCIONES</div>
+    <div class="login-brand-sub">Control Operativo</div>
+
+    <form onsubmit="handleLoginSubmit(event)">
+      <div class="form-group">
+        <label>Seleccionar Usuario</label>
+        <select class="form-control" id="login-user-select" onchange="onLoginUserChange(this.value)" required>
+          <!-- Inyectado dinámicamente -->
+        </select>
+      </div>
+
+      <div class="form-group" id="login-password-box">
+        <label id="login-password-label">PIN / Contraseña</label>
+        <input type="password" id="login-password-input" class="form-control" style="letter-spacing:4px; font-size:16px; text-align:center;" placeholder="••••">
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+        <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+      </button>
+    </form>
+  </div>
+</div>
 
 <div class="app-container">
   <header class="app-header">
@@ -665,9 +734,11 @@
       </div>
     </div>
     
-    <div class="role-switcher">
-      <i class="fa-solid fa-user" style="font-size: 11px;"></i>
-      <select id="user-role" onchange="onUserSelectChange(this.value)"></select>
+    <div class="header-user-badge">
+      <span id="header-user-name">Admin</span>
+      <button class="btn-logout" title="Cerrar Sesión" onclick="logoutSession()">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      </button>
     </div>
   </header>
 
@@ -718,7 +789,7 @@
       <button class="filter-pill active" id="tab-clients-active" onclick="switchClientsTab('active')">
         <i class="fa-solid fa-users"></i> Activos
       </button>
-      <button class="filter-pill" id="tab-clients-trash" onclick="switchClientsTab('trash')">
+      <button class="filter-pill admin-only" id="tab-clients-trash" onclick="switchClientsTab('trash')">
         <i class="fa-solid fa-trash-can"></i> Eliminados / Papelera
       </button>
     </div>
@@ -1142,25 +1213,10 @@
   </nav>
 </div>
 
-<!-- Modal PIN de Seguridad -->
-<div id="pin-modal" class="pin-modal">
-  <div class="pin-modal-content">
-    <i class="fa-solid fa-lock" style="font-size: 26px; color: var(--primary); margin-bottom: 8px;"></i>
-    <h3 style="font-size: 14px; font-weight: 800; color: var(--primary);" id="pin-modal-title">Acceso de Seguridad</h3>
-    <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;" id="pin-modal-desc">Ingresa el código PIN para continuar</p>
-    <input type="password" id="security-pin-input" class="form-control pin-input" maxlength="6" placeholder="••••">
-    <div style="display:flex; gap:8px; margin-top: 10px;">
-      <button class="btn btn-outline" style="flex:1;" onclick="cancelPinModal()">Cancelar</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="verifyPinModal()">Entrar</button>
-    </div>
-  </div>
-</div>
-
 <script>
   const ADMIN_WHATSAPP = '524493898869';
   const ADMIN_PIN = '8484';
 
-  // LLAVES REALES DE FIREBASE
   const firebaseConfig = {
     apiKey: "AIzaSyAj_VbKEa-U13xMclDQI8YrbynqTCqrFDY",
     authDomain: "barba-construcciones.firebaseapp.com",
@@ -1197,8 +1253,7 @@
   let activeFinanceFilter = 'day';
   let activeClientsTab = 'active';
 
-  let activeUserId = 'admin';
-  let pendingUserId = null;
+  let activeUserId = null; // null obliga a iniciar sesión
 
   let technicians = JSON.parse(localStorage.getItem('barba_techs_v2')) || [
     {
@@ -1314,91 +1369,99 @@
         technicians = [];
         snapshot.forEach(doc => technicians.push(doc.data()));
         localStorage.setItem('barba_techs_v2', JSON.stringify(technicians));
-        populateUserRoleSelect();
+        populateLoginUsers();
         renderTechs();
       }
     });
   }
 
-  function populateUserRoleSelect() {
-    const sel = document.getElementById('user-role');
-    sel.innerHTML = `<option value="admin">Administrador 👑</option>`;
+  // GESTIÓN DE INICIO DE SESIÓN
+  function populateLoginUsers() {
+    const sel = document.getElementById('login-user-select');
+    sel.innerHTML = `
+      <option value="admin">Administrador 👑</option>
+    `;
     technicians.forEach(t => {
       sel.innerHTML += `<option value="${t.id}">${t.name} (Técnico)</option>`;
     });
-    sel.value = activeUserId;
+    onLoginUserChange(sel.value);
   }
 
-  function onUserSelectChange(targetId) {
-    pendingUserId = targetId;
+  function onLoginUserChange(userId) {
+    const pwdBox = document.getElementById('login-password-box');
+    const pwdInput = document.getElementById('login-password-input');
+    pwdInput.value = '';
 
-    if (targetId === 'admin') {
-      openPinModal('Acceso Administrador', 'Ingresa el PIN de Administrador (8484)');
+    if (userId === 'admin') {
+      pwdBox.style.display = 'block';
+      document.getElementById('login-password-label').textContent = 'PIN de Administrador';
+      pwdInput.placeholder = '••••';
     } else {
-      const tech = technicians.find(t => t.id === targetId);
+      const tech = technicians.find(t => t.id === userId);
       if (tech && tech.hasPassword) {
-        openPinModal(`Acceso: ${tech.name}`, `Ingresa la contraseña de ${tech.name}`);
+        pwdBox.style.display = 'block';
+        document.getElementById('login-password-label').textContent = `Contraseña de ${tech.name}`;
+        pwdInput.placeholder = 'Ingresa tu contraseña';
       } else {
-        applyUserSession(targetId);
+        pwdBox.style.display = 'none';
       }
     }
   }
 
-  function openPinModal(title, desc) {
-    document.getElementById('pin-modal-title').textContent = title;
-    document.getElementById('pin-modal-desc').textContent = desc;
-    document.getElementById('security-pin-input').value = '';
-    document.getElementById('pin-modal').style.display = 'flex';
-    document.getElementById('security-pin-input').focus();
-  }
+  function handleLoginSubmit(e) {
+    e.preventDefault();
+    const selectedUser = document.getElementById('login-user-select').value;
+    const pwdInput = document.getElementById('login-password-input').value.trim();
 
-  function verifyPinModal() {
-    const inputVal = document.getElementById('security-pin-input').value.trim();
-
-    if (pendingUserId === 'admin') {
-      if (inputVal === ADMIN_PIN) {
-        document.getElementById('pin-modal').style.display = 'none';
-        applyUserSession('admin');
-        alert('¡Acceso concedido como Administrador!');
+    if (selectedUser === 'admin') {
+      if (pwdInput === ADMIN_PIN) {
+        activateSession('admin', 'Administrador');
       } else {
-        alert('PIN de Administrador incorrecto.');
-        cancelPinModal();
+        alert('PIN de Administrador incorrecto (8484).');
       }
     } else {
-      const tech = technicians.find(t => t.id === pendingUserId);
-      if (tech && tech.password === inputVal) {
-        document.getElementById('pin-modal').style.display = 'none';
-        applyUserSession(pendingUserId);
+      const tech = technicians.find(t => t.id === selectedUser);
+      if (!tech) return;
+
+      if (tech.hasPassword) {
+        if (pwdInput === tech.password) {
+          activateSession(tech.id, tech.name);
+        } else {
+          alert('Contraseña incorrecta.');
+        }
       } else {
-        alert('Contraseña del técnico incorrecta.');
-        cancelPinModal();
+        activateSession(tech.id, tech.name);
       }
     }
   }
 
-  function cancelPinModal() {
-    document.getElementById('pin-modal').style.display = 'none';
-    document.getElementById('user-role').value = activeUserId;
-    pendingUserId = null;
-  }
-
-  function applyUserSession(userId) {
+  function activateSession(userId, displayName) {
     activeUserId = userId;
-    document.getElementById('user-role').value = userId;
+    document.getElementById('header-user-name').textContent = displayName;
+    document.getElementById('login-overlay').style.display = 'none';
 
     if (userId === 'admin') {
       document.body.classList.remove('is-employee');
     } else {
       document.body.classList.add('is-employee');
-      const activeView = document.querySelector('.content-view.active').id;
-      if (['view-finances', 'view-new', 'view-techs'].includes(activeView)) {
-        switchView('agenda');
-      }
     }
+
+    switchView('agenda');
     renderOrders();
     renderClients();
   }
 
+  function logoutSession() {
+    if (confirm('¿Cerrar sesión actual?')) {
+      activeUserId = null;
+      document.body.classList.add('is-employee');
+      document.getElementById('login-overlay').style.display = 'flex';
+      document.getElementById('login-password-input').value = '';
+      populateLoginUsers();
+    }
+  }
+
+  // TÉCNICOS
   function showNewTechForm() {
     document.getElementById('new-tech-box').style.display = 'block';
     document.getElementById('t-name').focus();
@@ -1434,7 +1497,7 @@
     e.target.reset();
     document.getElementById('tech-password-container').style.display = 'none';
     hideNewTechForm();
-    populateUserRoleSelect();
+    populateLoginUsers();
     renderTechs();
     alert(`Técnico ${newTech.name} registrado con éxito.`);
   }
@@ -1475,14 +1538,12 @@
         db.collection('technicians').doc(techId).delete();
       }
       saveTechs();
-      if (activeUserId === techId) {
-        applyUserSession('admin');
-      }
-      populateUserRoleSelect();
+      populateLoginUsers();
       renderTechs();
     }
   }
 
+  // CALENDARIO
   function initMonthYearSelectors() {
     const monthSel = document.getElementById('month-select');
     const yearSel = document.getElementById('year-select');
@@ -2574,13 +2635,12 @@ Recordamos que en *${ord.date}* realizamos servicio a su *${ord.type}* en su dom
   }
 
   window.onload = () => {
-    populateUserRoleSelect();
+    populateLoginUsers();
     initMonthYearSelectors();
     renderCalendar();
     renderOrders();
     renderClients();
     renderTechs();
-    applyUserSession('admin');
     initCloudListeners();
   };
 </script>
