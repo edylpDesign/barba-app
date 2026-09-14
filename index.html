@@ -131,13 +131,6 @@
       line-height: 1.1;
     }
 
-    .brand-name p {
-      font-size: 8px;
-      color: var(--secondary);
-      font-weight: 700;
-      letter-spacing: 0.8px;
-    }
-
     .cloud-status {
       display: inline-flex;
       align-items: center;
@@ -687,7 +680,7 @@
       <div class="form-group">
         <label>Selecciona tu Usuario</label>
         <select id="login-user-select" class="form-control" onchange="onLoginUserChange(this.value)">
-          <!-- Inyectado dinámicamente -->
+          <!-- Dinámico -->
         </select>
       </div>
 
@@ -1209,28 +1202,27 @@
   const ADMIN_WHATSAPP = '524493898869';
   const ADMIN_PIN = '8484';
 
+  /* CONFIGURACIÓN DE FIREBASE OFICIAL BARBA CONSTRUCCIONES */
   const firebaseConfig = {
-    apiKey: "TU_API_KEY_AQUI",
-    authDomain: "tu-proyecto.firebaseapp.com",
-    projectId: "tu-proyecto",
-    storageBucket: "tu-proyecto.appspot.com",
-    messagingSenderId: "1234567890",
-    appId: "1:1234567890:web:abcdef123456"
+    apiKey: "AIzaSyAj_VbKEa-U13xMclDQI8YrbynqTCqrFDY",
+    authDomain: "barba-construcciones.firebaseapp.com",
+    projectId: "barba-construcciones",
+    storageBucket: "barba-construcciones.firebasestorage.app",
+    messagingSenderId: "328295824997",
+    appId: "1:328295824997:web:7af399487b7ecc8573508c"
   };
 
   let db = null;
   let isFirebaseReady = false;
 
   try {
-    if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "TU_API_KEY_AQUI") {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      isFirebaseReady = true;
-      document.getElementById('cloud-dot').classList.add('online');
-      document.getElementById('cloud-text').textContent = 'En Línea';
-    }
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    isFirebaseReady = true;
+    document.getElementById('cloud-dot').classList.add('online');
+    document.getElementById('cloud-text').textContent = 'En Línea';
   } catch(err) {
-    console.warn("Iniciando en almacenamiento local:", err);
+    console.warn("Error conectando a Firebase:", err);
   }
 
   const months = [
@@ -1247,7 +1239,7 @@
   let activeFinanceFilter = 'day';
   let activeClientsTab = 'active';
 
-  let activeUserId = null; // No hay sesión activa por defecto
+  let activeUserId = null;
 
   let technicians = JSON.parse(localStorage.getItem('barba_techs_v2')) || [
     {
@@ -1369,7 +1361,7 @@
     });
   }
 
-  /* SISTEMA DE LOGIN */
+  /* AUTENTICACIÓN / LOGIN */
   function populateLoginUserSelect() {
     const sel = document.getElementById('login-user-select');
     sel.innerHTML = `
@@ -2596,7 +2588,7 @@ Recordamos que en *${ord.date}* realizamos servicio a su *${ord.type}* en su dom
     document.body.removeChild(link);
   }
 
-  /* CANVAS FIRMA */
+  /* CANVAS */
   let canvas, ctx, drawing = false;
 
   function setupCanvas() {
