@@ -1,0 +1,2588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Barba Construcciones - Control Operativo & Personal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --primary: #0b2545;
+      --secondary: #e67e22;
+      --accent: #134074;
+      --bg: #f4f7f6;
+      --surface: #ffffff;
+      --text: #1d2d44;
+      --text-muted: #6c757d;
+      --border: #e2e8f0;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --whatsapp: #25d366;
+      --maps: #ea4335;
+      --shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      min-height: 100vh;
+    }
+
+    .app-header {
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-logo-svg {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      background: #ffffff;
+      padding: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-name h1 {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+    }
+
+    .cloud-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 9px;
+      color: #cbd5e1;
+      margin-top: 1px;
+    }
+    .cloud-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+    .cloud-dot.online { background: #4ade80; box-shadow: 0 0 5px #4ade80; }
+
+    .role-switcher {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.14);
+      padding: 4px 8px;
+      border-radius: 20px;
+    }
+
+    .role-switcher select {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+      max-width: 130px;
+    }
+
+    .role-switcher select option {
+      color: #000;
+    }
+
+    .content-view {
+      flex: 1;
+      padding: 14px 14px 85px 14px;
+      display: none;
+    }
+
+    .content-view.active {
+      display: block;
+    }
+
+    .calendar-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .cal-title-selects {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cal-select {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      border: none;
+      background: transparent;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .cal-nav-buttons {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cal-btn-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .btn-today {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 6px;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .weekdays-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .weekday {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 2px 0;
+    }
+
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+
+    .day-cell {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      position: relative;
+    }
+
+    .day-cell:hover { background: #f8fafc; }
+    .day-cell.other-month { color: #cbd5e1; }
+    .day-cell.today { border: 1.5px solid var(--secondary); color: var(--secondary); }
+    .day-cell.selected { background: var(--primary) !important; color: #fff !important; }
+    .day-cell.selected .event-dot { background-color: #fff !important; }
+
+    .event-dots {
+      display: flex;
+      gap: 2px;
+      position: absolute;
+      bottom: 2px;
+      height: 3px;
+    }
+
+    .event-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+    }
+
+    .dot-solar { background-color: #d97706; }
+    .dot-plomberie { background-color: #0284c7; }
+    .dot-electricidad { background-color: #dc2626; }
+    .dot-construccion { background-color: #7e22ce; }
+
+    .order-card, .client-card, .tech-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .order-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .badge-solar { background: #fef3c7; color: #d97706; }
+    .badge-plomberie { background: #e0f2fe; color: #0284c7; }
+    .badge-electricidad { background: #fee2e2; color: #dc2626; }
+    .badge-construccion { background: #f3e8ff; color: #7e22ce; }
+
+    .order-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+    .order-client { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+
+    .order-financial-pill {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      margin-top: 6px;
+    }
+
+    .order-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 6px;
+      margin-top: 6px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .status-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .status-pendiente { color: var(--secondary); background: #fff7ed; }
+    .status-por-cobrar { color: #b45309; background: #fef3c7; border: 1px solid #fde68a; }
+    .status-completado { color: var(--success); background: #f0fdf4; }
+
+    .warranty-banner {
+      background: #fffbeb;
+      border: 1.5px dashed #f59e0b;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #92400e;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 12px;
+      outline: none;
+      background: #fff;
+    }
+
+    .form-control:focus {
+      border-color: var(--secondary);
+    }
+
+    .form-control:disabled {
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      scrollbar-width: none;
+    }
+    .filter-pills::-webkit-scrollbar { display: none; }
+
+    .filter-pill {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #e2e8f0;
+      color: var(--text);
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter-pill.active {
+      background: var(--secondary);
+      color: #fff;
+    }
+
+    .custom-date-box {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fin-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .fin-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .fin-card-info h4 {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    .fin-card-info p {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .fin-card-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .property-history-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 12px;
+      max-height: 130px;
+      overflow-y: auto;
+    }
+
+    .property-history-item {
+      font-size: 11px;
+      border-bottom: 1px dashed var(--border);
+      padding: 5px 0;
+    }
+    .property-history-item:last-child {
+      border-bottom: none;
+    }
+
+    .client-history-accordion {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .client-history-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 6px;
+      font-size: 11px;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: #f8fafc;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .checklist-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--secondary);
+    }
+
+    .checklist-item span {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .signature-area {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      touch-action: none;
+      width: 100%;
+      height: 100px;
+      margin-bottom: 6px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 11px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary { background: var(--secondary); color: #fff; }
+    .btn-secondary { background: var(--primary); color: #fff; }
+    .btn-warning { background: var(--warning); color: #fff; }
+    .btn-whatsapp { background: var(--whatsapp); color: #fff; }
+    .btn-maps { background: var(--maps); color: #fff; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+
+    .btn-icon-danger {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid #fecaca;
+      background: #fff1f2;
+      color: var(--danger);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-icon-danger:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-icon-restore {
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid #bbf7d0;
+      background: #f0fdf4;
+      color: #166534;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      background: #fff;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      z-index: 50;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: var(--text-muted);
+      font-size: 9px;
+      font-weight: 600;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .nav-item i { font-size: 16px; }
+    .nav-item.active { color: var(--secondary); }
+
+    .pin-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .pin-modal-content {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+
+    .pin-input {
+      letter-spacing: 6px;
+      font-size: 20px;
+      text-align: center;
+      margin: 12px 0;
+    }
+
+    .admin-only {
+      display: block;
+    }
+    body.is-employee .admin-only {
+      display: none !important;
+    }
+  </style>
+</head>
+<body class="is-employee">
+
+<div class="app-container">
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-logo-svg">
+        <svg viewBox="0 0 120 120" width="32" height="32">
+          <path d="M48 24 L22 38 L48 38 Z" fill="#e67e22"/>
+          <path d="M48 18 L53 38 L43 38 Z" fill="#e67e22"/>
+          <path d="M50 38 L25 38 L25 68 C25 80 40 92 50 96 L50 38 Z" fill="#e67e22"/>
+          <path d="M50 38 L75 38 L75 68 C75 80 60 92 50 96 L50 38 Z" fill="#0b2545"/>
+          <rect x="36" y="44" width="28" height="8" rx="2" fill="#ffffff"/>
+          <rect x="47" y="52" width="6" height="18" rx="1" fill="#ffffff"/>
+          <polygon points="34,60 40,60 36,68 42,68 33,78 36,70 31,70" fill="#ffffff"/>
+          <path d="M64 68 C64 63 67 60 67 60 C67 60 70 63 70 68 C70 71 67 72 67 72 C67 72 64 71 64 68 Z" fill="#ffffff"/>
+          <path d="M35 78 C40 85 45 92 50 102 C55 92 60 85 65 78 C60 82 55 86 50 86 C45 86 40 82 35 78 Z" fill="#0b2545"/>
+        </svg>
+      </div>
+      <div class="brand-name">
+        <h1>BARBA CONSTRUCCIONES</h1>
+        <div class="cloud-status">
+          <span class="cloud-dot" id="cloud-dot"></span>
+          <span id="cloud-text">Modo Local</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="role-switcher">
+      <i class="fa-solid fa-user" style="font-size: 11px;"></i>
+      <select id="user-role" onchange="onUserSelectChange(this.value)"></select>
+    </div>
+  </header>
+
+  <!-- VISTA 1: Calendario & Agenda Principal -->
+  <main id="view-agenda" class="content-view active">
+    <div class="calendar-card">
+      <div class="cal-header">
+        <div class="cal-title-selects">
+          <select id="month-select" class="cal-select" onchange="onMonthYearChange()"></select>
+          <select id="year-select" class="cal-select" onchange="onMonthYearChange()"></select>
+        </div>
+        <div class="cal-nav-buttons">
+          <button class="btn-today" onclick="goToToday()">Hoy</button>
+          <button class="cal-btn-icon" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="cal-btn-icon" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+
+      <div class="weekdays-grid">
+        <div class="weekday">Dom</div>
+        <div class="weekday">Lun</div>
+        <div class="weekday">Mar</div>
+        <div class="weekday">Mié</div>
+        <div class="weekday">Jue</div>
+        <div class="weekday">Vie</div>
+        <div class="weekday">Sáb</div>
+      </div>
+
+      <div class="days-grid" id="month-grid"></div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <h3 style="font-size: 12px; font-weight: 800; color: var(--primary);" id="selected-day-label">SERVICIOS</h3>
+      <span id="order-count" style="font-size: 11px; color: var(--text-muted); font-weight: 700;">0 servicios</span>
+    </div>
+
+    <div id="orders-list"></div>
+  </main>
+
+  <!-- VISTA 2: Base de Datos de Clientes & Papelera -->
+  <main id="view-clients" class="content-view">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <h2 style="font-size: 15px; color: var(--primary); font-weight: 800;">CLIENTES</h2>
+      <button class="btn btn-primary" style="width: auto; padding: 6px 10px; font-size: 11px;" onclick="showNewClientForm()">+ Nuevo</button>
+    </div>
+
+    <div class="filter-pills" style="margin-bottom: 10px;">
+      <button class="filter-pill active" id="tab-clients-active" onclick="switchClientsTab('active')">
+        <i class="fa-solid fa-users"></i> Activos
+      </button>
+      <button class="filter-pill" id="tab-clients-trash" onclick="switchClientsTab('trash')">
+        <i class="fa-solid fa-trash-can"></i> Eliminados / Papelera
+      </button>
+    </div>
+
+    <div id="new-client-box" style="display:none; background:#fff; border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:14px;">
+      <h4 style="font-size:12px; color:var(--primary); margin-bottom:8px;">REGISTRAR NUEVO CLIENTE</h4>
+      <form onsubmit="handleSaveClient(event)">
+        <div class="form-group">
+          <label>Nombre Completo</label>
+          <input type="text" id="c-name" class="form-control" required placeholder="Ej. Roberto Gómez">
+        </div>
+        <div class="form-group">
+          <label>Teléfono / WhatsApp</label>
+          <input type="tel" id="c-phone" class="form-control" required placeholder="Ej. 4491234567">
+        </div>
+        
+        <div style="display: flex; gap: 8px;">
+          <div class="form-group" style="flex: 1;">
+            <label>Ciudad / Municipio</label>
+            <input type="text" id="c-city" class="form-control" required placeholder="Ej. Aguascalientes">
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Fraccionamiento / Colonia</label>
+            <input type="text" id="c-neighborhood" class="form-control" required placeholder="Ej. Campestre Real">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Calle y Número (Int/Ext)</label>
+          <input type="text" id="c-street" class="form-control" required placeholder="Ej. Av. Universidad #402 Int. 3">
+        </div>
+
+        <div class="form-group">
+          <label>Ficha Técnica / Notas del Equipo</label>
+          <input type="text" id="c-equipment" class="form-control" placeholder="Ej. Calentador solar 15 tubos / Tubería PPR">
+        </div>
+
+        <div style="display:flex; gap:6px;">
+          <button type="submit" class="btn btn-primary">Guardar Cliente</button>
+          <button type="button" class="btn btn-outline" onclick="hideNewClientForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="form-group" id="client-search-container">
+      <input type="text" id="client-search-input" class="form-control" placeholder="🔍 Buscar por nombre, teléfono, fraccionamiento o calle..." oninput="filterClientsList()">
+    </div>
+
+    <div id="clients-list"></div>
+  </main>
+
+  <!-- VISTA 3: Gestión de Técnicos (SOLO ADMIN) -->
+  <main id="view-techs" class="content-view">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h2 style="font-size: 15px; color: var(--primary); font-weight: 800;">PLANTILLA DE TÉCNICOS</h2>
+      <button class="btn btn-primary" style="width: auto; padding: 6px 10px; font-size: 11px;" onclick="showNewTechForm()">+ Agregar Técnico</button>
+    </div>
+
+    <div id="new-tech-box" style="display:none; background:#fff; border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:14px;">
+      <h4 style="font-size:12px; color:var(--primary); margin-bottom:8px;">DAR DE ALTA TÉCNICO</h4>
+      <form onsubmit="handleSaveTech(event)">
+        <div class="form-group">
+          <label>Nombre del Técnico</label>
+          <input type="text" id="t-name" class="form-control" required placeholder="Ej. Juan Pérez">
+        </div>
+        <div class="form-group">
+          <label>Teléfono de Contacto</label>
+          <input type="tel" id="t-phone" class="form-control" required placeholder="Ej. 4491112233">
+        </div>
+        <div class="form-group">
+          <label>Especialidad</label>
+          <input type="text" id="t-specialty" class="form-control" placeholder="Ej. Fontanería & Calentadores Solares">
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:8px; margin-bottom:10px;">
+          <label style="display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700; cursor:pointer;">
+            <input type="checkbox" id="t-has-password" onchange="toggleTechPasswordField(this.checked)">
+            <span>¿Requiere contraseña para entrar a la App?</span>
+          </label>
+          
+          <div id="tech-password-container" style="display:none; margin-top:8px;">
+            <label style="font-size:10px; font-weight:700; color:var(--primary);">PIN o Contraseña Personal</label>
+            <input type="password" id="t-password" class="form-control" placeholder="Ej. 1234">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:6px;">
+          <button type="submit" class="btn btn-primary">Registrar Técnico</button>
+          <button type="button" class="btn btn-outline" onclick="hideNewTechForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="techs-list"></div>
+  </main>
+
+  <!-- VISTA 4: Finanzas & Recordatorios (SOLO ADMIN) -->
+  <main id="view-finances" class="content-view">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h2 style="font-size: 15px; color: var(--primary); font-weight: 800;">FINANZAS & CONTROL</h2>
+      <button class="btn btn-outline" style="width: auto; padding: 5px 8px; font-size: 10px; color:#15803d; border-color:#86efac; font-weight:700;" onclick="exportToExcelCSV()">
+        <i class="fa-solid fa-file-excel"></i> Exportar Excel
+      </button>
+    </div>
+
+    <div class="filter-pills">
+      <button class="filter-pill active" onclick="setFinanceFilter('day', this)">Hoy</button>
+      <button class="filter-pill" onclick="setFinanceFilter('custom_date', this)">📅 Fecha Específica</button>
+      <button class="filter-pill" onclick="setFinanceFilter('week', this)">Esta Semana</button>
+      <button class="filter-pill" onclick="setFinanceFilter('month', this)">Este Mes</button>
+      <button class="filter-pill" onclick="setFinanceFilter('year', this)">Este Año</button>
+      <button class="filter-pill" onclick="setFinanceFilter('all', this)">Todo</button>
+      <button class="filter-pill" style="background:#fef3c7; color:#b45309;" onclick="setFinanceFilter('pending_payment', this)">⚠️ Por Cobrar</button>
+      <button class="filter-pill" style="background:#dbeafe; color:#1e40af;" onclick="setFinanceFilter('preventive_alerts', this)">🔔 Recordatorios (+6 Meses)</button>
+    </div>
+
+    <div id="custom-date-picker-box" class="custom-date-box">
+      <label style="font-size: 11px; font-weight: 700; color: var(--primary); white-space: nowrap;">Elegir Día:</label>
+      <input type="date" id="finance-custom-date-input" class="form-control" style="padding: 5px;" onchange="onCustomDateSelected(this.value)">
+    </div>
+
+    <div class="fin-cards-grid" id="fin-cards-container">
+      <div class="fin-card">
+        <div class="fin-card-info">
+          <h4>Cobrado Efectivo</h4>
+          <p id="fin-total-income" style="color: var(--primary);">$0.00</p>
+        </div>
+        <div class="fin-card-icon" style="background:#e0f2fe; color:#0284c7;">
+          <i class="fa-solid fa-wallet"></i>
+        </div>
+      </div>
+
+      <div class="fin-card">
+        <div class="fin-card-info">
+          <h4>Por Cobrar (Pendiente)</h4>
+          <p id="fin-total-pending" style="color: var(--warning);">$0.00</p>
+        </div>
+        <div class="fin-card-icon" style="background:#fef3c7; color:#b45309;">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+        </div>
+      </div>
+
+      <div class="fin-card">
+        <div class="fin-card-info">
+          <h4>Gastos en Insumos</h4>
+          <p id="fin-total-expense" style="color: var(--danger);">$0.00</p>
+        </div>
+        <div class="fin-card-icon" style="background:#fee2e2; color:#dc2626;">
+          <i class="fa-solid fa-receipt"></i>
+        </div>
+      </div>
+
+      <div class="fin-card" style="border: 2px solid #bbf7d0;">
+        <div class="fin-card-info">
+          <h4>Ganancia Real Recibida</h4>
+          <p id="fin-total-profit" style="color: #15803d;">$0.00</p>
+        </div>
+        <div class="fin-card-icon" style="background:#dcfce7; color:#16a34a;">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); text-transform: uppercase;" id="finances-subtitle">Historial de Trabajos</h3>
+    <div id="finances-history-list"></div>
+  </main>
+
+  <!-- VISTA 5: Registrar Nueva Orden -->
+  <main id="view-new" class="content-view">
+    <h2 style="font-size: 14px; margin-bottom: 12px; color: var(--primary);">AGENDAR NUEVA ORDEN</h2>
+    <form id="form-new-order" onsubmit="handleCreateOrder(event)">
+      <div class="form-group">
+        <label>Seleccionar Cliente</label>
+        <select class="form-control" id="order-client-select" onchange="onClientSelected(this.value)" required></select>
+      </div>
+
+      <div class="form-group">
+        <label>Técnico Asignado</label>
+        <select class="form-control" id="order-tech-select" required></select>
+      </div>
+
+      <div class="form-group">
+        <label>Disciplina / Especialidad</label>
+        <select class="form-control" id="order-type" required>
+          <option value="Calentador Solar">Calentador Solar</option>
+          <option value="Plomería">Fontanería / Plomería</option>
+          <option value="Electricidad">Electricidad</option>
+          <option value="Construcción">Construcción y Reparaciones</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Nombre del Cliente</label>
+        <input type="text" class="form-control" id="order-client" required placeholder="Nombre">
+      </div>
+
+      <div class="form-group">
+        <label>Teléfono de Contacto</label>
+        <input type="tel" class="form-control" id="order-phone" placeholder="Teléfono del cliente">
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <div class="form-group" style="flex: 1;">
+          <label>Ciudad</label>
+          <input type="text" class="form-control" id="order-city" required placeholder="Ciudad">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label>Fraccionamiento / Col.</label>
+          <input type="text" id="order-neighborhood" class="form-control" required placeholder="Fraccionamiento">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Calle y Número</label>
+        <input type="text" id="order-street" required placeholder="Calle y número">
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <div class="form-group" style="flex: 1;">
+          <label>Fecha</label>
+          <input type="date" class="form-control" id="order-date" required>
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label>Hora</label>
+          <input type="time" class="form-control" id="order-time" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Periodo de Garantía Otorgada</label>
+        <select class="form-control" id="order-warranty">
+          <option value="3">3 Meses de Garantía</option>
+          <option value="6">6 Meses de Garantía</option>
+          <option value="12" selected>12 Meses (1 Año) de Garantía</option>
+          <option value="0">Sin Garantía</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Falla Reportada / Indicaciones</label>
+        <textarea class="form-control" id="order-desc" rows="2" placeholder="Motivo de la visita"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="margin-top: 6px;">Guardar Orden</button>
+      <button type="button" class="btn btn-outline" style="margin-top: 6px;" onclick="switchView('agenda')">Cancelar</button>
+    </form>
+  </main>
+
+  <!-- VISTA 6: Ejecución de Orden -->
+  <main id="view-detail" class="content-view">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-arrow-left" style="cursor: pointer;" onclick="switchView('agenda')"></i>
+        <h2 style="font-size: 14px; color: var(--primary);" id="detail-title">DETALLE DEL SERVICIO</h2>
+      </div>
+      <button class="admin-only btn-outline" style="width: auto; padding: 4px 8px; font-size: 10px;" onclick="enableAdminEdit()">
+        <i class="fa-solid fa-pen-to-square"></i> Editar Orden
+      </button>
+    </div>
+
+    <div id="warranty-status-box" style="display:none;" class="warranty-banner">
+      <i class="fa-solid fa-shield-halved" style="font-size: 16px;"></i>
+      <span id="warranty-status-text">Garantía Vigente</span>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom: 12px;">
+      <button type="button" class="btn btn-maps" onclick="openGoogleMapsRoute()">
+        <i class="fa-solid fa-map-location-dot"></i> Abrir en Maps
+      </button>
+      <button type="button" class="btn btn-whatsapp" onclick="sendArrivalWhatsApp()">
+        <i class="fa-solid fa-location-arrow"></i> Llegué al Sitio
+      </button>
+    </div>
+
+    <div style="margin-bottom: 12px;">
+      <h4 style="font-size: 11px; margin-bottom: 4px; color: var(--text-muted); text-transform: uppercase;">
+        <i class="fa-solid fa-clock-rotate-left"></i> Historial Técnico en este Domicilio
+      </h4>
+      <div class="property-history-box" id="property-history-list"></div>
+    </div>
+
+    <div style="background:#fff; border:1px solid var(--border); border-radius:8px; padding:10px; margin-bottom:12px;">
+      <div class="form-group">
+        <label>Técnico Responsable</label>
+        <input type="text" id="edit-tech-name" class="form-control" disabled>
+      </div>
+      <div class="form-group">
+        <label>Cliente</label>
+        <input type="text" id="edit-client" class="form-control" disabled>
+      </div>
+      <div class="form-group">
+        <label>Teléfono Cliente</label>
+        <input type="text" id="edit-phone" class="form-control" disabled>
+      </div>
+
+      <div style="display:flex; gap:8px;">
+        <div class="form-group" style="flex:1;">
+          <label>Ciudad</label>
+          <input type="text" id="edit-city" class="form-control" disabled>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label>Fraccionamiento / Col.</label>
+          <input type="text" id="edit-neighborhood" class="form-control" disabled>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Calle y Número</label>
+        <input type="text" id="edit-street" class="form-control" disabled>
+      </div>
+
+      <div style="display:flex; gap:8px;">
+        <div class="form-group" style="flex:1;">
+          <label>Fecha</label>
+          <input type="date" id="edit-date" class="form-control" disabled>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label>Hora</label>
+          <input type="time" id="edit-time" class="form-control" disabled>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Falla Reportada</label>
+        <textarea id="edit-desc" class="form-control" rows="2" disabled></textarea>
+      </div>
+      <button id="btn-save-admin-edit" class="btn btn-secondary admin-only" style="display:none; margin-top: 4px;" onclick="saveAdminChanges()">Guardar Cambios de Orden</button>
+    </div>
+
+    <!-- Informe de Campo -->
+    <h4 style="font-size: 11px; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase;">Informe de Campo (Técnico)</h4>
+    <div style="background:#fff; border:1px solid var(--border); border-radius:8px; padding:10px; margin-bottom:12px;">
+      <div class="form-group">
+        <label>¿Qué trabajo / reparación se realizó?</label>
+        <textarea id="detail-work-done" class="form-control" rows="2" placeholder="Ej. Cambio de ánodo y purga de tubos"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Materiales e Insumos Utilizados</label>
+        <textarea id="detail-materials-used" class="form-control" rows="2" placeholder="Ej. 1 barra magnesio 3/4, teflón"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Total del Servicio ($)</label>
+        <input type="number" step="0.01" class="form-control" id="detail-charge" placeholder="0.00" oninput="calculateLiveProfit()">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 6px;">
+        <label>Estado del Pago</label>
+        <select class="form-control" id="detail-payment-status">
+          <option value="pagado">✅ Ya pagó (Completado)</option>
+          <option value="por_cobrar">⏳ Trabajo Terminado Pero NO ha Pagado (Por Cobrar)</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label>Meses de Garantía Otorgada</label>
+        <select class="form-control" id="detail-warranty-months">
+          <option value="3">3 Meses</option>
+          <option value="6">6 Meses</option>
+          <option value="12">12 Meses (1 Año)</option>
+          <option value="0">Sin Garantía</option>
+        </select>
+      </div>
+
+      <div class="admin-only" style="border-top: 1px dashed var(--border); margin-top: 10px; padding-top: 10px;">
+        <div class="form-group">
+          <label>Costo de Materiales / Gastos ($)</label>
+          <input type="number" step="0.01" class="form-control" id="detail-expense" placeholder="0.00" oninput="calculateLiveProfit()">
+        </div>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 6px; text-align: center;">
+          <span style="font-size: 10px; font-weight: 700; color: #166534;">UTILIDAD ESTIMADA:</span>
+          <div style="font-size: 15px; font-weight: 800; color: #15803d;" id="detail-profit-preview">$0.00</div>
+        </div>
+      </div>
+    </div>
+
+    <h4 style="font-size: 11px; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase;">Checklist de Inspección</h4>
+    <div id="checklist-container">
+      <label class="checklist-item"><input type="checkbox"> <span>Revisión de fuga en empaques de silicón</span></label>
+      <label class="checklist-item"><input type="checkbox"> <span>Drenado y desazolve de sarro en termo-tanque</span></label>
+      <label class="checklist-item"><input type="checkbox"> <span>Reemplazo de barra de magnesio (ánodo)</span></label>
+      <label class="checklist-item"><input type="checkbox"> <span>Prueba de hermeticidad y presión de agua</span></label>
+      <label class="checklist-item"><input type="checkbox"> <span>Verificación de jarro de aire y válvula check</span></label>
+    </div>
+
+    <h4 style="font-size: 11px; margin: 10px 0 6px 0; color: var(--text-muted); text-transform: uppercase;">Firma de Conformidad</h4>
+    <canvas id="signature-pad" class="signature-area"></canvas>
+    <button type="button" class="btn btn-outline" style="font-size: 10px; padding: 4px; margin-bottom: 10px;" onclick="clearSignature()">Limpiar Firma</button>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button type="button" class="btn btn-outline" style="border-color:var(--whatsapp); color:#166534;" onclick="sendClientTicketWhatsApp()">
+        <i class="fa-brands fa-whatsapp" style="color:var(--whatsapp);"></i> Enviar Ticket por WhatsApp al Cliente (Opcional)
+      </button>
+
+      <button type="button" class="btn btn-secondary" onclick="completeOrderAndSendAdminWhatsApp()">
+        <i class="fa-brands fa-whatsapp" style="color:var(--whatsapp);"></i> Concluir Visita & Enviar Ticket al Administrador
+      </button>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchView('agenda')">
+      <i class="fa-regular fa-calendar-days"></i>
+      <span>Calendario</span>
+    </button>
+    <button class="nav-item" onclick="switchView('clients')">
+      <i class="fa-solid fa-users"></i>
+      <span>Clientes</span>
+    </button>
+    <button class="nav-item admin-only" onclick="switchView('techs')">
+      <i class="fa-solid fa-user-gear"></i>
+      <span>Técnicos</span>
+    </button>
+    <button class="nav-item admin-only" onclick="openNewOrderModal()">
+      <i class="fa-solid fa-plus-circle"></i>
+      <span>Nueva Orden</span>
+    </button>
+    <button class="nav-item admin-only" onclick="switchView('finances')">
+      <i class="fa-solid fa-chart-pie"></i>
+      <span>Finanzas</span>
+    </button>
+  </nav>
+</div>
+
+<!-- Modal PIN de Seguridad -->
+<div id="pin-modal" class="pin-modal">
+  <div class="pin-modal-content">
+    <i class="fa-solid fa-lock" style="font-size: 26px; color: var(--primary); margin-bottom: 8px;"></i>
+    <h3 style="font-size: 14px; font-weight: 800; color: var(--primary);" id="pin-modal-title">Acceso de Seguridad</h3>
+    <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;" id="pin-modal-desc">Ingresa el código PIN para continuar</p>
+    <input type="password" id="security-pin-input" class="form-control pin-input" maxlength="6" placeholder="••••">
+    <div style="display:flex; gap:8px; margin-top: 10px;">
+      <button class="btn btn-outline" style="flex:1;" onclick="cancelPinModal()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="verifyPinModal()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ADMIN_WHATSAPP = '524493898869';
+  const ADMIN_PIN = '8484';
+
+  // LLAVES REALES DE FIREBASE
+  const firebaseConfig = {
+    apiKey: "AIzaSyAj_VbKEa-U13xMclDQI8YrbynqTCqrFDY",
+    authDomain: "barba-construcciones.firebaseapp.com",
+    projectId: "barba-construcciones",
+    storageBucket: "barba-construcciones.firebasestorage.app",
+    messagingSenderId: "328295824997",
+    appId: "1:328295824997:web:7af399487b7ecc8573508c"
+  };
+
+  let db = null;
+  let isFirebaseReady = false;
+
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    isFirebaseReady = true;
+    document.getElementById('cloud-dot').classList.add('online');
+    document.getElementById('cloud-text').textContent = 'En Línea';
+  } catch(err) {
+    console.warn("Iniciando en almacenamiento local:", err);
+  }
+
+  const months = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+
+  const now = new Date();
+  let currentYear = now.getFullYear();
+  let currentMonth = now.getMonth();
+  let selectedDate = now.toISOString().split('T')[0];
+  let customFinanceDate = now.toISOString().split('T')[0];
+  let activeOrderId = null;
+  let activeFinanceFilter = 'day';
+  let activeClientsTab = 'active';
+
+  let activeUserId = 'admin';
+  let pendingUserId = null;
+
+  let technicians = JSON.parse(localStorage.getItem('barba_techs_v2')) || [
+    {
+      id: 'TECH-01',
+      name: 'Juan Barba',
+      phone: '4491112233',
+      specialty: 'Calentadores Solares & Plomería',
+      hasPassword: false,
+      password: ''
+    },
+    {
+      id: 'TECH-02',
+      name: 'Pedro Ramírez',
+      phone: '4494445566',
+      specialty: 'Electricidad y Redes',
+      hasPassword: true,
+      password: '1234'
+    }
+  ];
+
+  let clients = JSON.parse(localStorage.getItem('barba_clients_v10')) || [
+    {
+      id: 'CLI-01',
+      name: 'María González',
+      phone: '4491234567',
+      city: 'Aguascalientes',
+      neighborhood: 'Las Américas',
+      street: 'Av. Las Américas #402',
+      equipment: 'Calentador Solar gravedad 150L 15 tubos',
+      deleted: false
+    },
+    {
+      id: 'CLI-02',
+      name: 'Taller Central',
+      phone: '4499876543',
+      city: 'Aguascalientes',
+      neighborhood: 'Centro',
+      street: 'Calle Juárez #110',
+      equipment: 'Instalación hidráulica PPR y red eléctrica',
+      deleted: false
+    }
+  ];
+
+  let orders = JSON.parse(localStorage.getItem('barba_orders_v9')) || [
+    {
+      id: 'ORD-101',
+      type: 'Calentador Solar',
+      techId: 'TECH-01',
+      techName: 'Juan Barba',
+      client: 'María González',
+      phone: '4491234567',
+      city: 'Aguascalientes',
+      neighborhood: 'Las Américas',
+      street: 'Av. Las Américas #402',
+      date: '2025-09-10',
+      time: '09:00',
+      desc: 'Instalación de barra de magnesio y purga.',
+      status: 'Completado',
+      workDone: 'Cambio de barra de magnesio y purga de sarro en tubos.',
+      materialsUsed: '1 Barra magnesio 3/4, 2 empaques silicona 58mm',
+      charge: 1200,
+      expense: 350,
+      profit: 850,
+      warrantyMonths: 12
+    }
+  ];
+
+  function saveTechs() {
+    localStorage.setItem('barba_techs_v2', JSON.stringify(technicians));
+    if (isFirebaseReady) {
+      technicians.forEach(t => db.collection('technicians').doc(t.id).set(t));
+    }
+  }
+
+  function saveClients() {
+    localStorage.setItem('barba_clients_v10', JSON.stringify(clients));
+    if (isFirebaseReady) {
+      clients.forEach(c => db.collection('clients').doc(c.id).set(c));
+    }
+  }
+
+  function saveOrders() {
+    localStorage.setItem('barba_orders_v9', JSON.stringify(orders));
+    if (isFirebaseReady) {
+      orders.forEach(o => db.collection('orders').doc(o.id).set(o));
+    }
+  }
+
+  function initCloudListeners() {
+    if (!isFirebaseReady) return;
+
+    db.collection('orders').onSnapshot(snapshot => {
+      if (!snapshot.empty) {
+        orders = [];
+        snapshot.forEach(doc => orders.push(doc.data()));
+        localStorage.setItem('barba_orders_v9', JSON.stringify(orders));
+        renderCalendar();
+        renderOrders();
+      }
+    });
+
+    db.collection('clients').onSnapshot(snapshot => {
+      if (!snapshot.empty) {
+        clients = [];
+        snapshot.forEach(doc => clients.push(doc.data()));
+        localStorage.setItem('barba_clients_v10', JSON.stringify(clients));
+        renderClients();
+      }
+    });
+
+    db.collection('technicians').onSnapshot(snapshot => {
+      if (!snapshot.empty) {
+        technicians = [];
+        snapshot.forEach(doc => technicians.push(doc.data()));
+        localStorage.setItem('barba_techs_v2', JSON.stringify(technicians));
+        populateUserRoleSelect();
+        renderTechs();
+      }
+    });
+  }
+
+  function populateUserRoleSelect() {
+    const sel = document.getElementById('user-role');
+    sel.innerHTML = `<option value="admin">Administrador 👑</option>`;
+    technicians.forEach(t => {
+      sel.innerHTML += `<option value="${t.id}">${t.name} (Técnico)</option>`;
+    });
+    sel.value = activeUserId;
+  }
+
+  function onUserSelectChange(targetId) {
+    pendingUserId = targetId;
+
+    if (targetId === 'admin') {
+      openPinModal('Acceso Administrador', 'Ingresa el PIN de Administrador (8484)');
+    } else {
+      const tech = technicians.find(t => t.id === targetId);
+      if (tech && tech.hasPassword) {
+        openPinModal(`Acceso: ${tech.name}`, `Ingresa la contraseña de ${tech.name}`);
+      } else {
+        applyUserSession(targetId);
+      }
+    }
+  }
+
+  function openPinModal(title, desc) {
+    document.getElementById('pin-modal-title').textContent = title;
+    document.getElementById('pin-modal-desc').textContent = desc;
+    document.getElementById('security-pin-input').value = '';
+    document.getElementById('pin-modal').style.display = 'flex';
+    document.getElementById('security-pin-input').focus();
+  }
+
+  function verifyPinModal() {
+    const inputVal = document.getElementById('security-pin-input').value.trim();
+
+    if (pendingUserId === 'admin') {
+      if (inputVal === ADMIN_PIN) {
+        document.getElementById('pin-modal').style.display = 'none';
+        applyUserSession('admin');
+        alert('¡Acceso concedido como Administrador!');
+      } else {
+        alert('PIN de Administrador incorrecto.');
+        cancelPinModal();
+      }
+    } else {
+      const tech = technicians.find(t => t.id === pendingUserId);
+      if (tech && tech.password === inputVal) {
+        document.getElementById('pin-modal').style.display = 'none';
+        applyUserSession(pendingUserId);
+      } else {
+        alert('Contraseña del técnico incorrecta.');
+        cancelPinModal();
+      }
+    }
+  }
+
+  function cancelPinModal() {
+    document.getElementById('pin-modal').style.display = 'none';
+    document.getElementById('user-role').value = activeUserId;
+    pendingUserId = null;
+  }
+
+  function applyUserSession(userId) {
+    activeUserId = userId;
+    document.getElementById('user-role').value = userId;
+
+    if (userId === 'admin') {
+      document.body.classList.remove('is-employee');
+    } else {
+      document.body.classList.add('is-employee');
+      const activeView = document.querySelector('.content-view.active').id;
+      if (['view-finances', 'view-new', 'view-techs'].includes(activeView)) {
+        switchView('agenda');
+      }
+    }
+    renderOrders();
+    renderClients();
+  }
+
+  function showNewTechForm() {
+    document.getElementById('new-tech-box').style.display = 'block';
+    document.getElementById('t-name').focus();
+  }
+  function hideNewTechForm() {
+    document.getElementById('new-tech-box').style.display = 'none';
+  }
+  function toggleTechPasswordField(checked) {
+    document.getElementById('tech-password-container').style.display = checked ? 'block' : 'none';
+  }
+
+  function handleSaveTech(e) {
+    e.preventDefault();
+    const hasPass = document.getElementById('t-has-password').checked;
+    const passVal = document.getElementById('t-password').value.trim();
+
+    if (hasPass && !passVal) {
+      alert('Por favor introduce una contraseña para este técnico.');
+      return;
+    }
+
+    const newTech = {
+      id: 'TECH-' + Math.floor(100 + Math.random() * 900),
+      name: document.getElementById('t-name').value.trim(),
+      phone: document.getElementById('t-phone').value.trim(),
+      specialty: document.getElementById('t-specialty').value.trim() || 'General',
+      hasPassword: hasPass,
+      password: hasPass ? passVal : ''
+    };
+
+    technicians.push(newTech);
+    saveTechs();
+    e.target.reset();
+    document.getElementById('tech-password-container').style.display = 'none';
+    hideNewTechForm();
+    populateUserRoleSelect();
+    renderTechs();
+    alert(`Técnico ${newTech.name} registrado con éxito.`);
+  }
+
+  function renderTechs() {
+    const list = document.getElementById('techs-list');
+    list.innerHTML = '';
+
+    if (technicians.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding: 25px; color: var(--text-muted); font-size:12px;">No hay técnicos registrados.</div>`;
+      return;
+    }
+
+    technicians.forEach(t => {
+      const card = document.createElement('div');
+      card.className = 'tech-card';
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3 style="font-size:13px; font-weight:700; color:var(--primary);">${t.name}</h3>
+          <span style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; ${t.hasPassword ? 'background:#fef3c7; color:#b45309;' : 'background:#f1f5f9; color:var(--text-muted);'}">
+            ${t.hasPassword ? '🔒 Con Clave' : '🔓 Sin Clave'}
+          </span>
+        </div>
+        <p style="font-size:11px; color:var(--text-muted); margin: 3px 0;"><i class="fa-solid fa-phone"></i> ${t.phone}</p>
+        <p style="font-size:11px; color:var(--secondary); font-weight:600;"><i class="fa-solid fa-wrench"></i> ${t.specialty}</p>
+        <button class="btn btn-outline" style="margin-top:6px; font-size:10px; padding:4px; color:var(--danger); border-color:#fca5a5;" onclick="deleteTech('${t.id}')">
+          <i class="fa-solid fa-trash"></i> Eliminar Técnico
+        </button>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function deleteTech(techId) {
+    if (confirm('¿Seguro que deseas eliminar a este técnico del sistema?')) {
+      technicians = technicians.filter(t => t.id !== techId);
+      if (isFirebaseReady) {
+        db.collection('technicians').doc(techId).delete();
+      }
+      saveTechs();
+      if (activeUserId === techId) {
+        applyUserSession('admin');
+      }
+      populateUserRoleSelect();
+      renderTechs();
+    }
+  }
+
+  function initMonthYearSelectors() {
+    const monthSel = document.getElementById('month-select');
+    const yearSel = document.getElementById('year-select');
+
+    monthSel.innerHTML = months.map((m, idx) => `<option value="${idx}">${m}</option>`).join('');
+    
+    let yearOptions = '';
+    for (let y = currentYear - 3; y <= currentYear + 5; y++) {
+      yearOptions += `<option value="${y}">${y}</option>`;
+    }
+    yearSel.innerHTML = yearOptions;
+
+    monthSel.value = currentMonth;
+    yearSel.value = currentYear;
+  }
+
+  function onMonthYearChange() {
+    currentMonth = parseInt(document.getElementById('month-select').value);
+    currentYear = parseInt(document.getElementById('year-select').value);
+    renderCalendar();
+  }
+
+  function changeMonth(delta) {
+    currentMonth += delta;
+    if (currentMonth > 11) {
+      currentMonth = 0;
+      currentYear++;
+    } else if (currentMonth < 0) {
+      currentMonth = 11;
+      currentYear--;
+    }
+    document.getElementById('month-select').value = currentMonth;
+    document.getElementById('year-select').value = currentYear;
+    renderCalendar();
+  }
+
+  function goToToday() {
+    const today = new Date();
+    currentYear = today.getFullYear();
+    currentMonth = today.getMonth();
+    selectedDate = today.toISOString().split('T')[0];
+    document.getElementById('month-select').value = currentMonth;
+    document.getElementById('year-select').value = currentYear;
+    renderCalendar();
+    renderOrders();
+  }
+
+  function renderCalendar() {
+    const grid = document.getElementById('month-grid');
+    grid.innerHTML = '';
+
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
+
+    for (let i = firstDay - 1; i >= 0; i--) {
+      const cell = document.createElement('div');
+      cell.className = 'day-cell other-month';
+      cell.textContent = prevMonthDays - i;
+      grid.appendChild(cell);
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const cell = document.createElement('div');
+      const mm = String(currentMonth + 1).padStart(2, '0');
+      const dd = String(day).padStart(2, '0');
+      const dateStr = `${currentYear}-${mm}-${dd}`;
+
+      cell.className = 'day-cell';
+      cell.textContent = day;
+
+      if (dateStr === todayStr) cell.classList.add('today');
+      if (dateStr === selectedDate) cell.classList.add('selected');
+
+      const dayOrders = orders.filter(o => o.date === dateStr);
+      if (dayOrders.length > 0) {
+        const dotsBox = document.createElement('div');
+        dotsBox.className = 'event-dots';
+        dayOrders.slice(0, 3).forEach(o => {
+          const dot = document.createElement('span');
+          const dotClass = o.type === 'Calentador Solar' ? 'dot-solar' : 
+                           o.type === 'Plomería' ? 'dot-plomberie' : 
+                           o.type === 'Electricidad' ? 'dot-electricidad' : 'dot-construccion';
+          dot.className = `event-dot ${dotClass}`;
+          dotsBox.appendChild(dot);
+        });
+        cell.appendChild(dotsBox);
+      }
+
+      cell.onclick = () => {
+        selectedDate = dateStr;
+        renderCalendar();
+        renderOrders();
+      };
+
+      grid.appendChild(cell);
+    }
+
+    const totalCells = firstDay + daysInMonth;
+    const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+    for (let i = 1; i <= remaining; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'day-cell other-month';
+      cell.textContent = i;
+      grid.appendChild(cell);
+    }
+  }
+
+  function renderOrders() {
+    const list = document.getElementById('orders-list');
+    list.innerHTML = '';
+    const filtered = orders.filter(o => o.date === selectedDate);
+    const isAdmin = activeUserId === 'admin';
+
+    document.getElementById('order-count').textContent = `${filtered.length} servicios`;
+    
+    const parts = selectedDate.split('-');
+    const dObj = new Date(parts[0], parts[1] - 1, parts[2]);
+    const options = { weekday: 'long', day: 'numeric', month: 'short' };
+    document.getElementById('selected-day-label').textContent = `SERVICIOS DEL ${dObj.toLocaleDateString('es-ES', options).toUpperCase()}`;
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding: 25px 10px; color: var(--text-muted); font-size:12px;">Sin servicios agendados para este día.</div>`;
+      return;
+    }
+
+    filtered.forEach(o => {
+      const badgeClass = o.type === 'Calentador Solar' ? 'badge-solar' : 
+                         o.type === 'Plomería' ? 'badge-plomberie' : 
+                         o.type === 'Electricidad' ? 'badge-electricidad' : 'badge-construccion';
+
+      const card = document.createElement('div');
+      card.className = 'order-card';
+      card.onclick = () => openOrderDetail(o.id);
+      
+      const charge = Number(o.charge || 0);
+      const expense = Number(o.expense || 0);
+      const profit = charge - expense;
+      const fullAddress = `${o.street}, ${o.neighborhood}, ${o.city}`;
+
+      const financialPill = isAdmin ? `
+        <div class="order-financial-pill">
+          <span>Cobrado: <strong>$${charge.toFixed(2)}</strong></span>
+          <span>Insumos: <strong style="color:var(--danger);">$${expense.toFixed(2)}</strong></span>
+          <span>Utilidad: <strong style="color:var(--success);">$${profit.toFixed(2)}</strong></span>
+        </div>
+      ` : `
+        <div class="order-financial-pill">
+          <span>Monto: <strong>$${charge.toFixed(2)}</strong></span>
+        </div>
+      `;
+
+      let statusBadge = `<span class="status-badge status-pendiente">Pendiente</span>`;
+      if (o.status === 'Completado') {
+        statusBadge = `<span class="status-badge status-completado">✅ Pagado</span>`;
+      } else if (o.status === 'Por Cobrar') {
+        statusBadge = `<span class="status-badge status-por-cobrar">⚠️ Por Cobrar</span>`;
+      }
+
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <span class="order-badge ${badgeClass}">${o.type}</span>
+          ${statusBadge}
+        </div>
+        <div class="order-title">${o.client}</div>
+        <div class="order-client"><i class="fa-solid fa-location-dot"></i> ${fullAddress}</div>
+        <div style="font-size:10px; color:var(--primary); font-weight:700; margin-bottom:4px;">
+          <i class="fa-solid fa-user-gear"></i> Asignado: ${o.techName || 'Sin asignar'}
+        </div>
+        ${financialPill}
+        <div class="order-footer">
+          <span><i class="fa-regular fa-clock"></i> ${o.time} hrs</span>
+          <span>${o.phone ? '<i class="fa-solid fa-phone"></i> ' + o.phone : ''}</span>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function switchView(viewName) {
+    document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
+    if (viewName === 'agenda') {
+      document.getElementById('view-agenda').classList.add('active');
+      document.querySelectorAll('.nav-item')[0].classList.add('active');
+      renderCalendar();
+      renderOrders();
+    } else if (viewName === 'clients') {
+      document.getElementById('view-clients').classList.add('active');
+      document.querySelectorAll('.nav-item')[1].classList.add('active');
+      renderClients();
+    } else if (viewName === 'techs') {
+      document.getElementById('view-techs').classList.add('active');
+      document.querySelectorAll('.nav-item')[2].classList.add('active');
+      renderTechs();
+    } else if (viewName === 'new') {
+      document.getElementById('view-new').classList.add('active');
+      document.querySelectorAll('.nav-item')[3].classList.add('active');
+      populateClientSelect();
+      populateTechSelect();
+    } else if (viewName === 'finances') {
+      document.getElementById('view-finances').classList.add('active');
+      document.querySelectorAll('.nav-item')[4].classList.add('active');
+      renderFinances();
+    } else if (viewName === 'detail') {
+      document.getElementById('view-detail').classList.add('active');
+    }
+  }
+
+  function switchClientsTab(tab) {
+    activeClientsTab = tab;
+    document.getElementById('tab-clients-active').classList.toggle('active', tab === 'active');
+    document.getElementById('tab-clients-trash').classList.toggle('active', tab === 'trash');
+    document.getElementById('client-search-container').style.display = (tab === 'active') ? 'block' : 'none';
+    renderClients();
+  }
+
+  function showNewClientForm() {
+    document.getElementById('new-client-box').style.display = 'block';
+    document.getElementById('c-name').focus();
+  }
+  function hideNewClientForm() {
+    document.getElementById('new-client-box').style.display = 'none';
+  }
+
+  function handleSaveClient(e) {
+    e.preventDefault();
+    const newClient = {
+      id: 'CLI-' + Math.floor(100 + Math.random() * 900),
+      name: document.getElementById('c-name').value.trim(),
+      phone: document.getElementById('c-phone').value.trim(),
+      city: document.getElementById('c-city').value.trim(),
+      neighborhood: document.getElementById('c-neighborhood').value.trim(),
+      street: document.getElementById('c-street').value.trim(),
+      equipment: document.getElementById('c-equipment').value.trim(),
+      deleted: false
+    };
+    clients.push(newClient);
+    saveClients();
+    e.target.reset();
+    hideNewClientForm();
+    renderClients();
+    alert('Cliente registrado con éxito.');
+  }
+
+  function moveToTrashClient(clientId) {
+    const cli = clients.find(c => c.id === clientId);
+    if (!cli) return;
+
+    if (confirm(`¿Mover a "${cli.name}" a clientes eliminados?\nPodrás recuperarlo en cualquier momento desde la papelera.`)) {
+      cli.deleted = true;
+      saveClients();
+      renderClients();
+    }
+  }
+
+  function restoreClient(clientId) {
+    const cli = clients.find(c => c.id === clientId);
+    if (!cli) return;
+
+    cli.deleted = false;
+    saveClients();
+    renderClients();
+    alert(`Cliente "${cli.name}" restaurado con éxito.`);
+  }
+
+  function toggleClientHistory(clientId) {
+    const accordion = document.getElementById(`client-history-${clientId}`);
+    if (!accordion) return;
+
+    if (accordion.style.display === 'block') {
+      accordion.style.display = 'none';
+    } else {
+      document.querySelectorAll('.client-history-accordion').forEach(el => el.style.display = 'none');
+      
+      const cli = clients.find(c => c.id === clientId);
+      if (!cli) return;
+
+      const clientOrders = orders.filter(o => 
+        o.client.trim().toLowerCase() === cli.name.trim().toLowerCase() ||
+        (cli.phone && o.phone && o.phone.replace(/\D/g, '') === cli.phone.replace(/\D/g, ''))
+      );
+
+      if (clientOrders.length === 0) {
+        accordion.innerHTML = `<div style="font-size:11px; color:var(--text-muted); text-align:center; padding:6px 0;">No se han registrado trabajos anteriores para este cliente.</div>`;
+      } else {
+        let html = `<div style="font-size:11px; font-weight:800; color:var(--primary); margin-bottom:6px;">TRABAJOS REALIZADOS (${clientOrders.length}):</div>`;
+        clientOrders.forEach(ord => {
+          html += `
+            <div class="client-history-card">
+              <div style="display:flex; justify-content:space-between; font-weight:700; color:var(--secondary); margin-bottom:3px;">
+                <span>${ord.date} - ${ord.type}</span>
+                <span>$${Number(ord.charge || 0).toFixed(2)}</span>
+              </div>
+              <div style="font-size:10px; color:var(--primary); margin-bottom:2px;"><strong>Atendió:</strong> ${ord.techName || 'Personal Técnico'}</div>
+              <div style="margin-bottom:2px;"><strong>Trabajo:</strong> ${ord.workDone || ord.desc || 'Sin detalles'}</div>
+              ${ord.materialsUsed ? `<div style="color:var(--text-muted); margin-bottom:2px;"><strong>Insumos:</strong> ${ord.materialsUsed}</div>` : ''}
+              <div style="font-size:10px; font-weight:700; color:${ord.status === 'Completado' ? 'var(--success)' : 'var(--warning)'};">
+                Estatus: ${ord.status} | Garantía: ${ord.warrantyMonths || 0} meses
+              </div>
+            </div>
+          `;
+        });
+        accordion.innerHTML = html;
+      }
+      accordion.style.display = 'block';
+    }
+  }
+
+  function renderClients(filtered = null) {
+    const list = document.getElementById('clients-list');
+    list.innerHTML = '';
+    const isAdmin = activeUserId === 'admin';
+
+    let dataset = [];
+    if (activeClientsTab === 'trash') {
+      dataset = clients.filter(c => c.deleted === true);
+    } else {
+      dataset = filtered ? filtered.filter(c => !c.deleted) : clients.filter(c => !c.deleted);
+    }
+
+    if (dataset.length === 0) {
+      const msg = activeClientsTab === 'trash' ? 'La papelera de clientes está vacía.' : 'No se encontraron clientes activos.';
+      list.innerHTML = `<div style="text-align:center; padding: 25px; color: var(--text-muted); font-size:12px;">${msg}</div>`;
+      return;
+    }
+
+    dataset.forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'client-card';
+      const fullAddress = `${c.street}, ${c.neighborhood}, ${c.city}`;
+      
+      const deleteIconBtn = (isAdmin && activeClientsTab === 'active') ? `
+        <button class="btn-icon-danger" title="Mover a papelera" onclick="event.stopPropagation(); moveToTrashClient('${c.id}')">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      ` : '';
+
+      let bottomActions = '';
+      if (activeClientsTab === 'trash') {
+        bottomActions = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px dashed var(--border); padding-top:6px;">
+            <span style="font-size:10px; color:var(--danger); font-weight:700;"><i class="fa-solid fa-box-archive"></i> En Papelera</span>
+            <button class="btn-icon-restore" onclick="restoreClient('${c.id}')">
+              <i class="fa-solid fa-rotate-left"></i> Restaurar Cliente
+            </button>
+          </div>
+        `;
+      } else {
+        bottomActions = `
+          <div style="display:flex; gap:6px; margin-top:8px;">
+            <button class="btn btn-secondary" style="flex:1; font-size:10px; padding:6px;" onclick="toggleClientHistory('${c.id}')">
+              <i class="fa-solid fa-clock-rotate-left"></i> Ver Trabajos
+            </button>
+            <button class="btn btn-outline" style="flex:1; font-size:10px; padding:6px;" onclick="scheduleOrderForClient('${c.id}')">
+              <i class="fa-solid fa-calendar-plus"></i> Agendar Cita
+            </button>
+          </div>
+          <div id="client-history-${c.id}" class="client-history-accordion"></div>
+        `;
+      }
+
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <h3 style="font-size:13px; font-weight:700; color:var(--primary);">${c.name}</h3>
+            <a href="tel:${c.phone}" style="color:var(--secondary); font-size:11px; text-decoration:none; font-weight:600;"><i class="fa-solid fa-phone"></i> ${c.phone}</a>
+          </div>
+          ${deleteIconBtn}
+        </div>
+        <p style="font-size:11px; color:var(--text-muted); margin: 3px 0;"><i class="fa-solid fa-location-dot"></i> ${fullAddress}</p>
+        <p style="font-size:11px; color:var(--text); font-weight:500;"><i class="fa-solid fa-wrench"></i> ${c.equipment || 'Sin notas técnicas'}</p>
+        ${bottomActions}
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function filterClientsList() {
+    const q = document.getElementById('client-search-input').value.toLowerCase().trim();
+    const res = clients.filter(c => 
+      !c.deleted && (
+        c.name.toLowerCase().includes(q) || 
+        c.phone.includes(q) || 
+        (c.city && c.city.toLowerCase().includes(q)) || 
+        (c.neighborhood && c.neighborhood.toLowerCase().includes(q)) || 
+        (c.street && c.street.toLowerCase().includes(q))
+      )
+    );
+    renderClients(res);
+  }
+
+  function scheduleOrderForClient(clientId) {
+    const cli = clients.find(c => c.id === clientId);
+    if (!cli) return;
+    openNewOrderModal();
+    document.getElementById('order-client-select').value = cli.id;
+    onClientSelected(cli.id);
+  }
+
+  function populateClientSelect() {
+    const select = document.getElementById('order-client-select');
+    select.innerHTML = `
+      <option value="">-- Elige un cliente existente --</option>
+      <option value="__NEW__" style="font-weight:700; color:var(--secondary);">➕ [Registrar Nuevo Cliente]</option>
+    `;
+    clients.filter(c => !c.deleted).forEach(c => {
+      select.innerHTML += `<option value="${c.id}">${c.name} - ${c.neighborhood} (${c.phone})</option>`;
+    });
+  }
+
+  function populateTechSelect() {
+    const select = document.getElementById('order-tech-select');
+    select.innerHTML = `<option value="">-- Seleccionar Técnico Asignado --</option>`;
+    technicians.forEach(t => {
+      select.innerHTML += `<option value="${t.id}">${t.name} (${t.specialty})</option>`;
+    });
+  }
+
+  function onClientSelected(val) {
+    if (val === '__NEW__') {
+      alert('Te redirigiremos a la Base de Datos para dar de alta al nuevo cliente.');
+      switchView('clients');
+      showNewClientForm();
+      return;
+    }
+    const cli = clients.find(c => c.id === val);
+    if (cli) {
+      document.getElementById('order-client').value = cli.name;
+      document.getElementById('order-phone').value = cli.phone;
+      document.getElementById('order-city').value = cli.city || 'Aguascalientes';
+      document.getElementById('order-neighborhood').value = cli.neighborhood || '';
+      document.getElementById('order-street').value = cli.street || '';
+    }
+  }
+
+  function openNewOrderModal() {
+    document.getElementById('order-date').value = selectedDate;
+    switchView('new');
+  }
+
+  function handleCreateOrder(e) {
+    e.preventDefault();
+    const techId = document.getElementById('order-tech-select').value;
+    const techObj = technicians.find(t => t.id === techId);
+    const dateVal = document.getElementById('order-date').value;
+
+    const newOrd = {
+      id: 'ORD-' + Math.floor(100 + Math.random() * 900),
+      techId: techId,
+      techName: techObj ? techObj.name : 'Sin asignar',
+      type: document.getElementById('order-type').value,
+      client: document.getElementById('order-client').value,
+      phone: document.getElementById('order-phone').value,
+      city: document.getElementById('order-city').value,
+      neighborhood: document.getElementById('order-neighborhood').value,
+      street: document.getElementById('order-street').value,
+      date: dateVal,
+      time: document.getElementById('order-time').value,
+      desc: document.getElementById('order-desc').value,
+      warrantyMonths: parseInt(document.getElementById('order-warranty').value) || 0,
+      status: 'Pendiente',
+      workDone: '',
+      materialsUsed: '',
+      charge: 0,
+      expense: 0,
+      profit: 0
+    };
+    orders.push(newOrd);
+    saveOrders();
+    e.target.reset();
+
+    selectedDate = dateVal;
+    const d = new Date(dateVal + 'T00:00:00');
+    currentYear = d.getFullYear();
+    currentMonth = d.getMonth();
+    document.getElementById('month-select').value = currentMonth;
+    document.getElementById('year-select').value = currentYear;
+
+    switchView('agenda');
+  }
+
+  function openOrderDetail(id) {
+    activeOrderId = id;
+    const ord = orders.find(o => o.id === id);
+    if (!ord) return;
+
+    document.getElementById('detail-title').textContent = `${ord.id} - ${ord.type}`;
+    
+    document.getElementById('edit-tech-name').value = ord.techName || 'Sin asignar';
+    document.getElementById('edit-client').value = ord.client;
+    document.getElementById('edit-phone').value = ord.phone || 'Sin registrar';
+    document.getElementById('edit-city').value = ord.city || 'Aguascalientes';
+    document.getElementById('edit-neighborhood').value = ord.neighborhood || '';
+    document.getElementById('edit-street').value = ord.street || '';
+    document.getElementById('edit-date').value = ord.date;
+    document.getElementById('edit-time').value = ord.time;
+    document.getElementById('edit-desc').value = ord.desc || '';
+
+    document.getElementById('detail-work-done').value = ord.workDone || '';
+    document.getElementById('detail-materials-used').value = ord.materialsUsed || '';
+    document.getElementById('detail-warranty-months').value = ord.warrantyMonths || 12;
+
+    disableInputs(true);
+    document.getElementById('btn-save-admin-edit').style.display = 'none';
+
+    document.getElementById('detail-charge').value = ord.charge || '';
+    document.getElementById('detail-expense').value = ord.expense || '';
+
+    if (ord.status === 'Por Cobrar') {
+      document.getElementById('detail-payment-status').value = 'por_cobrar';
+    } else {
+      document.getElementById('detail-payment-status').value = 'pagado';
+    }
+
+    checkWarrantyStatus(ord);
+    loadPropertyHistory(ord);
+    calculateLiveProfit();
+
+    clearSignature();
+    switchView('detail');
+    setupCanvas();
+  }
+
+  function checkWarrantyStatus(currentOrd) {
+    const box = document.getElementById('warranty-status-box');
+    const txt = document.getElementById('warranty-status-text');
+
+    const previousOrders = orders.filter(o => 
+      o.id !== currentOrd.id && 
+      o.client.toLowerCase() === currentOrd.client.toLowerCase() &&
+      o.status === 'Completado' &&
+      o.warrantyMonths > 0
+    );
+
+    let hasActiveWarranty = false;
+    let warrantyInfo = '';
+    const currentDateObj = new Date(currentOrd.date + 'T00:00:00');
+
+    previousOrders.forEach(prev => {
+      const prevDateObj = new Date(prev.date + 'T00:00:00');
+      const expireDate = new Date(prevDateObj);
+      expireDate.setMonth(expireDate.getMonth() + prev.warrantyMonths);
+
+      if (currentDateObj <= expireDate) {
+        hasActiveWarranty = true;
+        const expStr = expireDate.toLocaleDateString('es-MX');
+        warrantyInfo = `¡GARANTÍA VIGENTE! Cubierto hasta el ${expStr} del servicio previo (${prev.id}).`;
+      }
+    });
+
+    if (hasActiveWarranty) {
+      box.style.display = 'flex';
+      txt.textContent = warrantyInfo;
+    } else {
+      box.style.display = 'none';
+    }
+  }
+
+  function loadPropertyHistory(currentOrd) {
+    const list = document.getElementById('property-history-list');
+    list.innerHTML = '';
+
+    const history = orders.filter(o => 
+      o.id !== currentOrd.id && 
+      (o.client.toLowerCase() === currentOrd.client.toLowerCase() || 
+       (o.street.toLowerCase() === currentOrd.street.toLowerCase() && o.neighborhood.toLowerCase() === currentOrd.neighborhood.toLowerCase()))
+    );
+
+    if (history.length === 0) {
+      list.innerHTML = `<div style="font-size:11px; color:var(--text-muted); padding:4px 0;">Primera visita en este domicilio.</div>`;
+      return;
+    }
+
+    history.forEach(h => {
+      const item = document.createElement('div');
+      item.className = 'property-history-item';
+      item.innerHTML = `
+        <strong>${h.date} (${h.type})</strong> - Atendió: ${h.techName || 'N/A'}<br>
+        <span>${h.workDone || h.desc || 'Sin notas'}</span><br>
+        <span style="color:var(--text-muted);">Cobro: $${(h.charge || 0).toFixed(2)} | Insumos: ${h.materialsUsed || 'N/A'}</span>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  function openGoogleMapsRoute() {
+    const ord = orders.find(o => o.id === activeOrderId);
+    if (!ord) return;
+    const query = `${ord.street}, ${ord.neighborhood}, ${ord.city}, Mexico`;
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    window.open(url, '_blank');
+  }
+
+  function disableInputs(disabled) {
+    document.getElementById('edit-client').disabled = disabled;
+    document.getElementById('edit-phone').disabled = disabled;
+    document.getElementById('edit-city').disabled = disabled;
+    document.getElementById('edit-neighborhood').disabled = disabled;
+    document.getElementById('edit-street').disabled = disabled;
+    document.getElementById('edit-date').disabled = disabled;
+    document.getElementById('edit-time').disabled = disabled;
+    document.getElementById('edit-desc').disabled = disabled;
+  }
+
+  function enableAdminEdit() {
+    disableInputs(false);
+    document.getElementById('btn-save-admin-edit').style.display = 'block';
+  }
+
+  function saveAdminChanges() {
+    const ord = orders.find(o => o.id === activeOrderId);
+    if (ord) {
+      ord.client = document.getElementById('edit-client').value;
+      ord.phone = document.getElementById('edit-phone').value;
+      ord.city = document.getElementById('edit-city').value;
+      ord.neighborhood = document.getElementById('edit-neighborhood').value;
+      ord.street = document.getElementById('edit-street').value;
+      ord.date = document.getElementById('edit-date').value;
+      ord.time = document.getElementById('edit-time').value;
+      ord.desc = document.getElementById('edit-desc').value;
+      saveOrders();
+      alert('¡Datos de orden actualizados!');
+      disableInputs(true);
+      document.getElementById('btn-save-admin-edit').style.display = 'none';
+    }
+  }
+
+  function calculateLiveProfit() {
+    const charge = parseFloat(document.getElementById('detail-charge').value) || 0;
+    const expense = parseFloat(document.getElementById('detail-expense').value) || 0;
+    const profit = charge - expense;
+    
+    const profitEl = document.getElementById('detail-profit-preview');
+    profitEl.textContent = `$${profit.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+    profitEl.style.color = profit >= 0 ? '#15803d' : '#b91c1c';
+  }
+
+  function sendArrivalWhatsApp() {
+    const ord = orders.find(o => o.id === activeOrderId);
+    if (!ord) return;
+
+    const arrivalTime = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    const fullAddress = `${ord.street}, Col. ${ord.neighborhood}, ${ord.city}`;
+    
+    const msg = `🚨 *AVISO DE LLEGADA / INICIO DE SERVICIO*
+🏢 *Barba Construcciones*
+----------------------------------
+📋 *Folio:* ${ord.id}
+👤 *Cliente:* ${ord.client}
+📍 *Domicilio:* ${fullAddress}
+🛠 *Servicio:* ${ord.type}
+👨‍🔧 *Técnico:* ${ord.techName || 'Personal Técnico'}
+⏰ *Hora Llegada:* ${arrivalTime}
+📝 *Falla:* ${ord.desc || 'N/A'}
+----------------------------------
+_Técnico en sitio iniciando operaciones._`;
+
+    const url = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+
+  function sendClientTicketWhatsApp() {
+    const ord = orders.find(o => o.id === activeOrderId);
+    if (!ord) return;
+
+    const clientPhoneClean = (ord.phone || '').replace(/\D/g, '');
+    if (!clientPhoneClean || clientPhoneClean.length < 10) {
+      alert('El cliente no cuenta con un teléfono celular válido.');
+      return;
+    }
+
+    const phoneFormatted = clientPhoneClean.length === 10 ? `52${clientPhoneClean}` : clientPhoneClean;
+    const work = document.getElementById('detail-work-done').value || ord.workDone || 'Servicio técnico realizado';
+    const charge = parseFloat(document.getElementById('detail-charge').value) || ord.charge || 0;
+    const payStatus = document.getElementById('detail-payment-status').value === 'por_cobrar' ? '⚠️ PENDIENTE DE PAGO' : '✅ PAGADO Y LIQUIDADO';
+    const warranty = document.getElementById('detail-warranty-months').value;
+    const closeDate = new Date().toLocaleDateString('es-MX');
+    const fullAddress = `${ord.street}, Col. ${ord.neighborhood}, ${ord.city}`;
+
+    const msg = `🧾 *TICKET DE SERVICIO - BARBA CONSTRUCCIONES*
+¡Agradecemos su preferencia!
+----------------------------------
+📄 *Folio:* ${ord.id}
+📅 *Fecha:* ${closeDate}
+👤 *Cliente:* ${ord.client}
+📍 *Domicilio:* ${fullAddress}
+👨‍🔧 *Atendió:* ${ord.techName || 'Barba Construcciones'}
+🔧 *Servicio:* ${ord.type}
+📋 *Trabajo Realizado:*
+${work}
+💰 *Total:* $${charge.toFixed(2)} MXN
+💳 *Estado:* ${payStatus}
+🛡 *Garantía Otorgada:* ${warranty} Meses
+----------------------------------
+*Barba Construcciones*
+📞 Contacto / Garantías: 449 389 8869`;
+
+    const url = `https://wa.me/${phoneFormatted}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+
+  function completeOrderAndSendAdminWhatsApp() {
+    const ord = orders.find(o => o.id === activeOrderId);
+    const isAdmin = activeUserId === 'admin';
+    if (!ord) return;
+
+    const workDone = document.getElementById('detail-work-done').value.trim();
+    const materialsUsed = document.getElementById('detail-materials-used').value.trim();
+    const charge = parseFloat(document.getElementById('detail-charge').value) || 0;
+    const payStatus = document.getElementById('detail-payment-status').value;
+    const warrantyMonths = parseInt(document.getElementById('detail-warranty-months').value) || 0;
+
+    if (!workDone) {
+      alert('Por favor describe en el informe qué trabajo o reparación se realizó.');
+      return;
+    }
+
+    ord.workDone = workDone;
+    ord.materialsUsed = materialsUsed;
+    ord.charge = charge;
+    ord.warrantyMonths = warrantyMonths;
+
+    if (isAdmin) {
+      ord.expense = parseFloat(document.getElementById('detail-expense').value) || 0;
+      ord.profit = ord.charge - ord.expense;
+    } else {
+      ord.profit = ord.charge - (ord.expense || 0);
+    }
+
+    if (payStatus === 'por_cobrar') {
+      ord.status = 'Por Cobrar';
+    } else {
+      ord.status = 'Completado';
+    }
+
+    saveOrders();
+
+    const finishTime = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    const finishDate = new Date().toLocaleDateString('es-MX');
+    const fullAddress = `${ord.street}, Col. ${ord.neighborhood}, ${ord.city}`;
+
+    const adminMsg = `🏁 *REPORTE DE VISITA FINALIZADA (TICKET)*
+🏢 *Barba Construcciones*
+----------------------------------
+📄 *Folio:* ${ord.id}
+📅 *Fecha:* ${finishDate} | ⏰ *Hora:* ${finishTime}
+👤 *Cliente:* ${ord.client}
+📞 *Teléfono Cliente:* ${ord.phone || 'N/A'}
+📍 *Domicilio:* ${fullAddress}
+👨‍🔧 *Técnico:* ${ord.techName || 'Personal Técnico'}
+🛠 *Disciplina:* ${ord.type}
+🛡 *Garantía:* ${ord.warrantyMonths} Meses
+
+📝 *TRABAJO ATENDIDO:*
+${ord.workDone}
+
+📦 *INSUMOS/MATERIALES USADOS:*
+${ord.materialsUsed || 'Ninguno reportado'}
+
+💵 *MONTO COBRADO:* $${ord.charge.toFixed(2)} MXN
+📌 *ESTADO DEL COBRO:* ${ord.status === 'Por Cobrar' ? '⚠️ POR COBRAR (PENDIENTE)' : '✅ COBRADO Y LIQUIDADO'}
+----------------------------------
+_Reporte generado automáticamente desde la App Barba Construcciones._`;
+
+    const adminUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(adminMsg)}`;
+    
+    alert('Servicio guardado con éxito. Se abrirá WhatsApp para remitir el ticket al Administrador.');
+    window.open(adminUrl, '_blank');
+    switchView('agenda');
+  }
+
+  function markOrderAsPaid(orderId) {
+    const ord = orders.find(o => o.id === orderId);
+    if (ord) {
+      ord.status = 'Completado';
+      saveOrders();
+      alert(`Servicio ${ord.id} liquidado. Ingreso registrado: $${ord.charge}.`);
+      renderFinances();
+    }
+  }
+
+  function setFinanceFilter(filter, el) {
+    activeFinanceFilter = filter;
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+
+    const customBox = document.getElementById('custom-date-picker-box');
+    if (filter === 'custom_date') {
+      customBox.style.display = 'flex';
+      document.getElementById('finance-custom-date-input').value = customFinanceDate;
+    } else {
+      customBox.style.display = 'none';
+    }
+
+    renderFinances();
+  }
+
+  function onCustomDateSelected(val) {
+    customFinanceDate = val;
+    renderFinances();
+  }
+
+  function renderFinances() {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    if (activeFinanceFilter === 'preventive_alerts') {
+      document.getElementById('fin-cards-container').style.display = 'none';
+      document.getElementById('finances-subtitle').textContent = '🔔 CLIENTES CON MÁS DE 6 MESES SIN SERVICIO PREVENTIVO';
+      renderPreventiveReminders();
+      return;
+    } else {
+      document.getElementById('fin-cards-container').style.display = 'grid';
+    }
+
+    let income = 0;
+    let expense = 0;
+    let pending = 0;
+
+    orders.forEach(o => {
+      if (o.status === 'Completado') {
+        income += Number(o.charge || 0);
+        expense += Number(o.expense || 0);
+      } else if (o.status === 'Por Cobrar') {
+        pending += Number(o.charge || 0);
+        expense += Number(o.expense || 0);
+      }
+    });
+
+    let filtered = [];
+    let filterIncome = 0;
+    let filterExpense = 0;
+    let filterPending = 0;
+
+    if (activeFinanceFilter === 'pending_payment') {
+      document.getElementById('finances-subtitle').textContent = '⚠️ CUENTAS PENDIENTES DE PAGO (POR COBRAR)';
+      filtered = orders.filter(o => o.status === 'Por Cobrar');
+    } else if (activeFinanceFilter === 'custom_date') {
+      const parts = customFinanceDate.split('-');
+      const dObj = new Date(parts[0], parts[1] - 1, parts[2]);
+      const dateStrFormat = dObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+      document.getElementById('finances-subtitle').textContent = `BALANCE DEL DÍA: ${dateStrFormat.toUpperCase()}`;
+      filtered = orders.filter(o => o.date === customFinanceDate && (o.status === 'Completado' || o.status === 'Por Cobrar'));
+    } else {
+      document.getElementById('finances-subtitle').textContent = 'HISTORIAL DE TRABAJOS CONCLUIDOS';
+      filtered = orders.filter(o => o.status === 'Completado');
+
+      if (activeFinanceFilter === 'day') {
+        filtered = filtered.filter(o => o.date === todayStr);
+      } else if (activeFinanceFilter === 'week') {
+        const curr = new Date();
+        const first = curr.getDate() - curr.getDay();
+        const firstday = new Date(curr.setDate(first)).toISOString().split('T')[0];
+        const lastday = new Date(curr.setDate(first + 6)).toISOString().split('T')[0];
+        filtered = filtered.filter(o => o.date >= firstday && o.date <= lastday);
+      } else if (activeFinanceFilter === 'month') {
+        const y = today.getFullYear();
+        const m = String(today.getMonth() + 1).padStart(2, '0');
+        filtered = filtered.filter(o => o.date.startsWith(`${y}-${m}`));
+      } else if (activeFinanceFilter === 'year') {
+        const y = today.getFullYear();
+        filtered = filtered.filter(o => o.date.startsWith(`${y}`));
+      }
+    }
+
+    filtered.forEach(o => {
+      if (o.status === 'Completado') {
+        filterIncome += Number(o.charge || 0);
+        filterExpense += Number(o.expense || 0);
+      } else if (o.status === 'Por Cobrar') {
+        filterPending += Number(o.charge || 0);
+        filterExpense += Number(o.expense || 0);
+      }
+    });
+
+    const displayIncome = (activeFinanceFilter === 'all') ? income : filterIncome;
+    const displayExpense = (activeFinanceFilter === 'all') ? expense : filterExpense;
+    const displayPending = (activeFinanceFilter === 'all') ? pending : filterPending;
+    const displayProfit = displayIncome - displayExpense;
+
+    document.getElementById('fin-total-income').textContent = `$${displayIncome.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+    document.getElementById('fin-total-pending').textContent = `$${displayPending.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+    document.getElementById('fin-total-expense').textContent = `$${displayExpense.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+    document.getElementById('fin-total-profit').textContent = `$${displayProfit.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+
+    const list = document.getElementById('finances-history-list');
+    list.innerHTML = '';
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size:12px;">Sin registros en este periodo/día seleccionado.</div>`;
+      return;
+    }
+
+    filtered.forEach(o => {
+      const card = document.createElement('div');
+      card.className = 'order-card';
+      const c = Number(o.charge || 0);
+      const e = Number(o.expense || 0);
+      const p = c - e;
+      const fullAddress = `${o.street}, Col. ${o.neighborhood}, ${o.city}`;
+
+      let actionBtn = '';
+      if (o.status === 'Por Cobrar') {
+        actionBtn = `
+          <button class="btn btn-warning" style="margin-top:8px; font-size:10px; padding:6px;" onclick="markOrderAsPaid('${o.id}')">
+            <i class="fa-solid fa-check-double"></i> Marcar como Pagado Ahora
+          </button>
+        `;
+      }
+
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <span style="font-size:12px; font-weight:700;">${o.client}</span>
+          <span style="font-size:10px; color:var(--text-muted);">${o.date}</span>
+        </div>
+        <div style="font-size:11px; color:var(--secondary); font-weight:600; margin-bottom:2px;">${o.type}</div>
+        <div style="font-size:10px; color:var(--primary); font-weight:700; margin-bottom:4px;"><i class="fa-solid fa-user-gear"></i> Técnico: ${o.techName || 'N/A'}</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;"><i class="fa-solid fa-location-dot"></i> ${fullAddress}</div>
+        ${o.workDone ? `<div style="font-size:11px; margin-bottom:3px;"><strong>Trabajo:</strong> ${o.workDone}</div>` : ''}
+        ${o.materialsUsed ? `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;"><strong>Insumos:</strong> ${o.materialsUsed}</div>` : ''}
+        <div class="order-financial-pill">
+          <span>${o.status === 'Por Cobrar' ? 'Por Cobrar:' : 'Cobrado:'} <strong style="${o.status === 'Por Cobrar' ? 'color:var(--warning);' : ''}">$${c.toFixed(2)}</strong></span>
+          <span>Insumos: <strong style="color:var(--danger);">$${e.toFixed(2)}</strong></span>
+          <span>Utilidad: <strong style="color:var(--success);">$${p.toFixed(2)}</strong></span>
+        </div>
+        ${actionBtn}
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function renderPreventiveReminders() {
+    const list = document.getElementById('finances-history-list');
+    list.innerHTML = '';
+
+    const today = new Date();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(today.getMonth() - 6);
+
+    const candidates = orders.filter(o => {
+      const ordDate = new Date(o.date + 'T00:00:00');
+      return ordDate <= sixMonthsAgo && o.status === 'Completado';
+    });
+
+    if (candidates.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding: 25px; color: var(--text-muted); font-size:12px;">No hay clientes pendientes de mantenimiento preventivo actualmente.</div>`;
+      return;
+    }
+
+    candidates.forEach(cand => {
+      const card = document.createElement('div');
+      card.className = 'order-card';
+      const fullAddress = `${cand.street}, ${cand.neighborhood}, ${cand.city}`;
+
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h4 style="font-size:13px; font-weight:700; color:var(--primary);">${cand.client}</h4>
+          <span style="font-size:10px; color:#1e40af; background:#dbeafe; padding:2px 6px; border-radius:4px; font-weight:700;">Última visita: ${cand.date}</span>
+        </div>
+        <p style="font-size:11px; color:var(--text-muted); margin: 3px 0;"><i class="fa-solid fa-location-dot"></i> ${fullAddress}</p>
+        <p style="font-size:11px; color:var(--text); font-weight:500;"><i class="fa-solid fa-solar-panel"></i> Servicio Previo: ${cand.type}</p>
+        <button class="btn btn-whatsapp" style="margin-top:8px; font-size:11px; padding:6px;" onclick="sendPreventiveWhatsApp('${cand.id}')">
+          <i class="fa-brands fa-whatsapp"></i> Enviar Recordatorio de Mantenimiento Anual
+        </button>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function sendPreventiveWhatsApp(orderId) {
+    const ord = orders.find(o => o.id === orderId);
+    if (!ord) return;
+
+    const phoneClean = (ord.phone || '').replace(/\D/g, '');
+    if (!phoneClean || phoneClean.length < 10) {
+      alert('El cliente no tiene un teléfono válido registrado.');
+      return;
+    }
+
+    const phoneFormatted = phoneClean.length === 10 ? `52${phoneClean}` : phoneClean;
+    const msg = `👋 ¡Hola ${ord.client}! Le saludamos de *Barba Construcciones*.
+
+Recordamos que en *${ord.date}* realizamos servicio a su *${ord.type}* en su domicilio. 
+
+🛠 Ya se ha cumplido el periodo recomendado para su **mantenimiento preventivo anual** (limpieza de sarro y cambio de barra de magnesio para proteger su equipo).
+
+¿Gusta que le agendemos una visita técnica esta semana?
+📞 Tel. 449 389 8869`;
+
+    const url = `https://wa.me/${phoneFormatted}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+
+  function exportToExcelCSV() {
+    if (orders.length === 0) {
+      alert('No hay órdenes registradas para exportar.');
+      return;
+    }
+
+    let csvContent = "\uFEFF";
+    csvContent += "Folio,Fecha,Hora,Tecnico,Cliente,Telefono,Ciudad,Fraccionamiento,Calle,Disciplina,Estatus,Cobrado,Gasto_Insumos,Utilidad_Neta,Garantia_Meses,Trabajo_Realizado,Insumos_Usados\n";
+
+    orders.forEach(o => {
+      const charge = Number(o.charge || 0).toFixed(2);
+      const expense = Number(o.expense || 0).toFixed(2);
+      const profit = Number(o.profit || (charge - expense)).toFixed(2);
+
+      const row = [
+        `"${o.id}"`,
+        `"${o.date}"`,
+        `"${o.time}"`,
+        `"${(o.techName || '').replace(/"/g, '""')}"`,
+        `"${o.client.replace(/"/g, '""')}"`,
+        `"${o.phone || ''}"`,
+        `"${(o.city || '').replace(/"/g, '""')}"`,
+        `"${(o.neighborhood || '').replace(/"/g, '""')}"`,
+        `"${(o.street || '').replace(/"/g, '""')}"`,
+        `"${o.type}"`,
+        `"${o.status}"`,
+        charge,
+        expense,
+        profit,
+        o.warrantyMonths || 0,
+        `"${(o.workDone || '').replace(/"/g, '""')}"`,
+        `"${(o.materialsUsed || '').replace(/"/g, '""')}"`
+      ];
+      csvContent += row.join(",") + "\n";
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Reporte_Barba_Construcciones_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  let canvas, ctx, drawing = false;
+
+  function setupCanvas() {
+    canvas = document.getElementById('signature-pad');
+    ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    ctx.strokeStyle = '#0b2545';
+    ctx.lineWidth = 2;
+
+    const startDraw = (e) => {
+      drawing = true;
+      ctx.beginPath();
+      const pos = getPos(e);
+      ctx.moveTo(pos.x, pos.y);
+    };
+
+    const draw = (e) => {
+      if (!drawing) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    };
+
+    const stopDraw = () => { drawing = false; };
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDraw);
+
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    window.addEventListener('touchend', stopDraw);
+  }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }
+
+  function clearSignature() {
+    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  window.onload = () => {
+    populateUserRoleSelect();
+    initMonthYearSelectors();
+    renderCalendar();
+    renderOrders();
+    renderClients();
+    renderTechs();
+    applyUserSession('admin');
+    initCloudListeners();
+  };
+</script>
+</body>
+</html>
