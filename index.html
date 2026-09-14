@@ -55,58 +55,6 @@
       min-height: 100vh;
     }
 
-    /* PANTALLA COMPLETA DE INICIO DE SESIÓN */
-    #login-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: var(--primary);
-      z-index: 2000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    .login-card {
-      background: #ffffff;
-      width: 100%;
-      max-width: 340px;
-      border-radius: 16px;
-      padding: 24px 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      text-align: center;
-    }
-
-    .login-logo-container {
-      width: 64px;
-      height: 64px;
-      background: #ffffff;
-      border-radius: 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      margin-bottom: 12px;
-    }
-
-    .login-brand-title {
-      font-size: 16px;
-      font-weight: 900;
-      color: var(--primary);
-      margin-bottom: 2px;
-      letter-spacing: 0.5px;
-    }
-
-    .login-brand-sub {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--secondary);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 18px;
-    }
-
     /* Header */
     .app-header {
       background: var(--primary);
@@ -145,6 +93,13 @@
       line-height: 1.1;
     }
 
+    .brand-name p {
+      font-size: 8px;
+      color: var(--secondary);
+      font-weight: 700;
+      letter-spacing: 0.8px;
+    }
+
     .cloud-status {
       display: inline-flex;
       align-items: center;
@@ -161,27 +116,28 @@
     }
     .cloud-dot.online { background: #4ade80; box-shadow: 0 0 5px #4ade80; }
 
-    .header-user-badge {
+    .role-switcher {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       background: rgba(255,255,255,0.14);
       padding: 4px 8px;
       border-radius: 20px;
+    }
+
+    .role-switcher select {
+      background: transparent;
+      border: none;
       color: #fff;
       font-size: 11px;
       font-weight: 700;
+      outline: none;
+      cursor: pointer;
+      max-width: 130px;
     }
 
-    .btn-logout {
-      background: transparent;
-      border: none;
-      color: #fca5a5;
-      font-size: 12px;
-      cursor: pointer;
-      padding: 2px 4px;
-      display: flex;
-      align-items: center;
+    .role-switcher select option {
+      color: #000;
     }
 
     /* Views */
@@ -395,7 +351,6 @@
     /* Forms */
     .form-group {
       margin-bottom: 10px;
-      text-align: left;
     }
 
     .form-group label {
@@ -543,6 +498,7 @@
       font-size: 11px;
     }
 
+    /* Checklist & Canvas */
     .checklist-item {
       display: flex;
       align-items: center;
@@ -575,6 +531,7 @@
       margin-bottom: 6px;
     }
 
+    /* Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -631,6 +588,7 @@
       gap: 4px;
     }
 
+    /* Bottom Navigation */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -660,6 +618,35 @@
     .nav-item i { font-size: 16px; }
     .nav-item.active { color: var(--secondary); }
 
+    /* Security Modal */
+    .pin-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .pin-modal-content {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+
+    .pin-input {
+      letter-spacing: 6px;
+      font-size: 20px;
+      text-align: center;
+      margin: 12px 0;
+    }
+
     .admin-only {
       display: block;
     }
@@ -670,46 +657,8 @@
 </head>
 <body class="is-employee">
 
-<!-- PANTALLA DE INICIO DE SESIÓN OBLIGATORIO -->
-<div id="login-overlay">
-  <div class="login-card">
-    <div class="login-logo-container">
-      <svg viewBox="0 0 120 120" width="50" height="50">
-        <path d="M48 24 L22 38 L48 38 Z" fill="#e67e22"/>
-        <path d="M48 18 L53 38 L43 38 Z" fill="#e67e22"/>
-        <path d="M50 38 L25 38 L25 68 C25 80 40 92 50 96 L50 38 Z" fill="#e67e22"/>
-        <path d="M50 38 L75 38 L75 68 C75 80 60 92 50 96 L50 38 Z" fill="#0b2545"/>
-        <rect x="36" y="44" width="28" height="8" rx="2" fill="#ffffff"/>
-        <rect x="47" y="52" width="6" height="18" rx="1" fill="#ffffff"/>
-        <polygon points="34,60 40,60 36,68 42,68 33,78 36,70 31,70" fill="#ffffff"/>
-        <path d="M64 68 C64 63 67 60 67 60 C67 60 70 63 70 68 C70 71 67 72 67 72 C67 72 64 71 64 68 Z" fill="#ffffff"/>
-        <path d="M35 78 C40 85 45 92 50 102 C55 92 60 85 65 78 C60 82 55 86 50 86 C45 86 40 82 35 78 Z" fill="#0b2545"/>
-      </svg>
-    </div>
-    <div class="login-brand-title">BARBA CONSTRUCCIONES</div>
-    <div class="login-brand-sub">Control Operativo</div>
-
-    <form onsubmit="handleLoginSubmit(event)">
-      <div class="form-group">
-        <label>Seleccionar Usuario</label>
-        <select class="form-control" id="login-user-select" onchange="onLoginUserChange(this.value)" required>
-          <!-- Inyectado dinámicamente -->
-        </select>
-      </div>
-
-      <div class="form-group" id="login-password-box">
-        <label id="login-password-label">PIN / Contraseña</label>
-        <input type="password" id="login-password-input" class="form-control" style="letter-spacing:4px; font-size:16px; text-align:center;" placeholder="••••">
-      </div>
-
-      <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
-        <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
-      </button>
-    </form>
-  </div>
-</div>
-
 <div class="app-container">
+  <!-- Header -->
   <header class="app-header">
     <div class="brand">
       <div class="brand-logo-svg">
@@ -734,15 +683,13 @@
       </div>
     </div>
     
-    <div class="header-user-badge">
-      <span id="header-user-name">Admin</span>
-      <button class="btn-logout" title="Cerrar Sesión" onclick="logoutSession()">
-        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-      </button>
+    <div class="role-switcher">
+      <i class="fa-solid fa-user" style="font-size: 11px;"></i>
+      <select id="user-role" onchange="onUserSelectChange(this.value)"></select>
     </div>
   </header>
 
-  <!-- VISTA 1: Calendario & Agenda Principal -->
+  <!-- VISTA 1: Calendario & Agenda -->
   <main id="view-agenda" class="content-view active">
     <div class="calendar-card">
       <div class="cal-header">
@@ -778,7 +725,7 @@
     <div id="orders-list"></div>
   </main>
 
-  <!-- VISTA 2: Base de Datos de Clientes & Papelera -->
+  <!-- VISTA 2: Clientes -->
   <main id="view-clients" class="content-view">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
       <h2 style="font-size: 15px; color: var(--primary); font-weight: 800;">CLIENTES</h2>
@@ -789,7 +736,7 @@
       <button class="filter-pill active" id="tab-clients-active" onclick="switchClientsTab('active')">
         <i class="fa-solid fa-users"></i> Activos
       </button>
-      <button class="filter-pill admin-only" id="tab-clients-trash" onclick="switchClientsTab('trash')">
+      <button class="filter-pill" id="tab-clients-trash" onclick="switchClientsTab('trash')">
         <i class="fa-solid fa-trash-can"></i> Eliminados / Papelera
       </button>
     </div>
@@ -841,7 +788,7 @@
     <div id="clients-list"></div>
   </main>
 
-  <!-- VISTA 3: Gestión de Técnicos (SOLO ADMIN) -->
+  <!-- VISTA 3: Técnicos -->
   <main id="view-techs" class="content-view">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <h2 style="font-size: 15px; color: var(--primary); font-weight: 800;">PLANTILLA DE TÉCNICOS</h2>
@@ -886,7 +833,7 @@
     <div id="techs-list"></div>
   </main>
 
-  <!-- VISTA 4: Finanzas & Recordatorios (SOLO ADMIN) -->
+  <!-- VISTA 4: Finanzas -->
   <main id="view-finances" class="content-view">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <h2 style="font-size: 15px; color: var(--primary); font-weight: 800;">FINANZAS & CONTROL</h2>
@@ -957,7 +904,7 @@
     <div id="finances-history-list"></div>
   </main>
 
-  <!-- VISTA 5: Registrar Nueva Orden -->
+  <!-- VISTA 5: Nueva Orden -->
   <main id="view-new" class="content-view">
     <h2 style="font-size: 14px; margin-bottom: 12px; color: var(--primary);">AGENDAR NUEVA ORDEN</h2>
     <form id="form-new-order" onsubmit="handleCreateOrder(event)">
@@ -1004,7 +951,7 @@
 
       <div class="form-group">
         <label>Calle y Número</label>
-        <input type="text" id="order-street" required placeholder="Calle y número">
+        <input type="text" class="form-control" id="order-street" required placeholder="Calle y número">
       </div>
 
       <div style="display: flex; gap: 8px;">
@@ -1038,7 +985,7 @@
     </form>
   </main>
 
-  <!-- VISTA 6: Ejecución de Orden -->
+  <!-- VISTA 6: Detalle de Orden -->
   <main id="view-detail" class="content-view">
     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
       <div style="display: flex; align-items: center; gap: 8px;">
@@ -1118,7 +1065,6 @@
       <button id="btn-save-admin-edit" class="btn btn-secondary admin-only" style="display:none; margin-top: 4px;" onclick="saveAdminChanges()">Guardar Cambios de Orden</button>
     </div>
 
-    <!-- Informe de Campo -->
     <h4 style="font-size: 11px; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase;">Informe de Campo (Técnico)</h4>
     <div style="background:#fff; border:1px solid var(--border); border-radius:8px; padding:10px; margin-bottom:12px;">
       <div class="form-group">
@@ -1213,28 +1159,44 @@
   </nav>
 </div>
 
+<!-- Modal PIN de Seguridad -->
+<div id="pin-modal" class="pin-modal">
+  <div class="pin-modal-content">
+    <i class="fa-solid fa-lock" style="font-size: 26px; color: var(--primary); margin-bottom: 8px;"></i>
+    <h3 style="font-size: 14px; font-weight: 800; color: var(--primary);" id="pin-modal-title">Acceso de Seguridad</h3>
+    <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;" id="pin-modal-desc">Ingresa tu contraseña para continuar</p>
+    <input type="password" id="security-pin-input" class="form-control pin-input" maxlength="6" placeholder="••••">
+    <div style="display:flex; gap:8px; margin-top: 10px;">
+      <button class="btn btn-outline" style="flex:1;" onclick="cancelPinModal()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="verifyPinModal()">Entrar</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const ADMIN_WHATSAPP = '524493898869';
   const ADMIN_PIN = '8484';
 
   const firebaseConfig = {
-    apiKey: "AIzaSyAj_VbKEa-U13xMclDQI8YrbynqTCqrFDY",
-    authDomain: "barba-construcciones.firebaseapp.com",
-    projectId: "barba-construcciones",
-    storageBucket: "barba-construcciones.firebasestorage.app",
-    messagingSenderId: "328295824997",
-    appId: "1:328295824997:web:7af399487b7ecc8573508c"
+    apiKey: "TU_API_KEY_AQUI",
+    authDomain: "tu-proyecto.firebaseapp.com",
+    projectId: "tu-proyecto",
+    storageBucket: "tu-proyecto.appspot.com",
+    messagingSenderId: "1234567890",
+    appId: "1:1234567890:web:abcdef123456"
   };
 
   let db = null;
   let isFirebaseReady = false;
 
   try {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    isFirebaseReady = true;
-    document.getElementById('cloud-dot').classList.add('online');
-    document.getElementById('cloud-text').textContent = 'En Línea';
+    if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "TU_API_KEY_AQUI") {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      isFirebaseReady = true;
+      document.getElementById('cloud-dot').classList.add('online');
+      document.getElementById('cloud-text').textContent = 'En Línea';
+    }
   } catch(err) {
     console.warn("Iniciando en almacenamiento local:", err);
   }
@@ -1253,7 +1215,8 @@
   let activeFinanceFilter = 'day';
   let activeClientsTab = 'active';
 
-  let activeUserId = null; // null obliga a iniciar sesión
+  let activeUserId = 'admin';
+  let pendingUserId = null;
 
   let technicians = JSON.parse(localStorage.getItem('barba_techs_v2')) || [
     {
@@ -1369,99 +1332,90 @@
         technicians = [];
         snapshot.forEach(doc => technicians.push(doc.data()));
         localStorage.setItem('barba_techs_v2', JSON.stringify(technicians));
-        populateLoginUsers();
+        populateUserRoleSelect();
         renderTechs();
       }
     });
   }
 
-  // GESTIÓN DE INICIO DE SESIÓN
-  function populateLoginUsers() {
-    const sel = document.getElementById('login-user-select');
-    sel.innerHTML = `
-      <option value="admin">Administrador 👑</option>
-    `;
+  function populateUserRoleSelect() {
+    const sel = document.getElementById('user-role');
+    sel.innerHTML = `<option value="admin">Administrador 👑</option>`;
     technicians.forEach(t => {
       sel.innerHTML += `<option value="${t.id}">${t.name} (Técnico)</option>`;
     });
-    onLoginUserChange(sel.value);
+    sel.value = activeUserId;
   }
 
-  function onLoginUserChange(userId) {
-    const pwdBox = document.getElementById('login-password-box');
-    const pwdInput = document.getElementById('login-password-input');
-    pwdInput.value = '';
+  function onUserSelectChange(targetId) {
+    pendingUserId = targetId;
 
-    if (userId === 'admin') {
-      pwdBox.style.display = 'block';
-      document.getElementById('login-password-label').textContent = 'PIN de Administrador';
-      pwdInput.placeholder = '••••';
+    if (targetId === 'admin') {
+      openPinModal('Acceso Administrador', 'Ingresa el PIN de Administrador');
     } else {
-      const tech = technicians.find(t => t.id === userId);
+      const tech = technicians.find(t => t.id === targetId);
       if (tech && tech.hasPassword) {
-        pwdBox.style.display = 'block';
-        document.getElementById('login-password-label').textContent = `Contraseña de ${tech.name}`;
-        pwdInput.placeholder = 'Ingresa tu contraseña';
+        openPinModal(`Acceso: ${tech.name}`, `Ingresa la contraseña de ${tech.name}`);
       } else {
-        pwdBox.style.display = 'none';
+        applyUserSession(targetId);
       }
     }
   }
 
-  function handleLoginSubmit(e) {
-    e.preventDefault();
-    const selectedUser = document.getElementById('login-user-select').value;
-    const pwdInput = document.getElementById('login-password-input').value.trim();
+  function openPinModal(title, desc) {
+    document.getElementById('pin-modal-title').textContent = title;
+    document.getElementById('pin-modal-desc').textContent = desc;
+    document.getElementById('security-pin-input').value = '';
+    document.getElementById('pin-modal').style.display = 'flex';
+    document.getElementById('security-pin-input').focus();
+  }
 
-    if (selectedUser === 'admin') {
-      if (pwdInput === ADMIN_PIN) {
-        activateSession('admin', 'Administrador');
+  function verifyPinModal() {
+    const inputVal = document.getElementById('security-pin-input').value.trim();
+
+    if (pendingUserId === 'admin') {
+      if (inputVal === ADMIN_PIN) {
+        document.getElementById('pin-modal').style.display = 'none';
+        applyUserSession('admin');
       } else {
-        alert('PIN de Administrador incorrecto (8484).');
+        alert('PIN de Administrador incorrecto.');
+        cancelPinModal();
       }
     } else {
-      const tech = technicians.find(t => t.id === selectedUser);
-      if (!tech) return;
-
-      if (tech.hasPassword) {
-        if (pwdInput === tech.password) {
-          activateSession(tech.id, tech.name);
-        } else {
-          alert('Contraseña incorrecta.');
-        }
+      const tech = technicians.find(t => t.id === pendingUserId);
+      if (tech && tech.password === inputVal) {
+        document.getElementById('pin-modal').style.display = 'none';
+        applyUserSession(pendingUserId);
       } else {
-        activateSession(tech.id, tech.name);
+        alert('Contraseña incorrecta.');
+        cancelPinModal();
       }
     }
   }
 
-  function activateSession(userId, displayName) {
+  function cancelPinModal() {
+    document.getElementById('pin-modal').style.display = 'none';
+    document.getElementById('user-role').value = activeUserId;
+    pendingUserId = null;
+  }
+
+  function applyUserSession(userId) {
     activeUserId = userId;
-    document.getElementById('header-user-name').textContent = displayName;
-    document.getElementById('login-overlay').style.display = 'none';
+    document.getElementById('user-role').value = userId;
 
     if (userId === 'admin') {
       document.body.classList.remove('is-employee');
     } else {
       document.body.classList.add('is-employee');
+      const activeView = document.querySelector('.content-view.active').id;
+      if (['view-finances', 'view-new', 'view-techs'].includes(activeView)) {
+        switchView('agenda');
+      }
     }
-
-    switchView('agenda');
     renderOrders();
     renderClients();
   }
 
-  function logoutSession() {
-    if (confirm('¿Cerrar sesión actual?')) {
-      activeUserId = null;
-      document.body.classList.add('is-employee');
-      document.getElementById('login-overlay').style.display = 'flex';
-      document.getElementById('login-password-input').value = '';
-      populateLoginUsers();
-    }
-  }
-
-  // TÉCNICOS
   function showNewTechForm() {
     document.getElementById('new-tech-box').style.display = 'block';
     document.getElementById('t-name').focus();
@@ -1497,7 +1451,7 @@
     e.target.reset();
     document.getElementById('tech-password-container').style.display = 'none';
     hideNewTechForm();
-    populateLoginUsers();
+    populateUserRoleSelect();
     renderTechs();
     alert(`Técnico ${newTech.name} registrado con éxito.`);
   }
@@ -1538,7 +1492,10 @@
         db.collection('technicians').doc(techId).delete();
       }
       saveTechs();
-      populateLoginUsers();
+      if (activeUserId === techId) {
+        applyUserSession('admin');
+      }
+      populateUserRoleSelect();
       renderTechs();
     }
   }
@@ -1725,6 +1682,7 @@
     });
   }
 
+  // NAVEGACIÓN
   function switchView(viewName) {
     document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
@@ -1756,6 +1714,7 @@
     }
   }
 
+  // GESTIÓN DE CLIENTES
   function switchClientsTab(tab) {
     activeClientsTab = tab;
     document.getElementById('tab-clients-active').classList.toggle('active', tab === 'active');
@@ -1810,7 +1769,7 @@
     cli.deleted = false;
     saveClients();
     renderClients();
-    alert(`Cliente "${cli.name}" restaurado con éxito.`);
+    alert(`Cliente "${cli.name}" restaurado con éxito a la lista activa.`);
   }
 
   function toggleClientHistory(clientId) {
@@ -2029,6 +1988,7 @@
     switchView('agenda');
   }
 
+  // DETALLE DE ORDEN
   function openOrderDetail(id) {
     activeOrderId = id;
     const ord = orders.find(o => o.id === id);
@@ -2185,6 +2145,7 @@
     profitEl.style.color = profit >= 0 ? '#15803d' : '#b91c1c';
   }
 
+  // WHATSAPP
   function sendArrivalWhatsApp() {
     const ord = orders.find(o => o.id === activeOrderId);
     if (!ord) return;
@@ -2329,6 +2290,7 @@ _Reporte generado automáticamente desde la App Barba Construcciones._`;
     }
   }
 
+  // FINANZAS
   function setFinanceFilter(filter, el) {
     activeFinanceFilter = filter;
     document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
@@ -2587,6 +2549,7 @@ Recordamos que en *${ord.date}* realizamos servicio a su *${ord.type}* en su dom
     document.body.removeChild(link);
   }
 
+  // CANVAS
   let canvas, ctx, drawing = false;
 
   function setupCanvas() {
@@ -2635,12 +2598,13 @@ Recordamos que en *${ord.date}* realizamos servicio a su *${ord.type}* en su dom
   }
 
   window.onload = () => {
-    populateLoginUsers();
+    populateUserRoleSelect();
     initMonthYearSelectors();
     renderCalendar();
     renderOrders();
     renderClients();
     renderTechs();
+    applyUserSession('admin');
     initCloudListeners();
   };
 </script>
