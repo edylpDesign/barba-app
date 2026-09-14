@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Barba Construcciones - Control Operativo & Personal</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Barba Construcciones - Control Operativo</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Firebase SDK -->
@@ -1215,7 +1218,8 @@
   let activeFinanceFilter = 'day';
   let activeClientsTab = 'active';
 
-  let activeUserId = 'admin';
+  // Iniciar siempre como técnico por defecto
+  let activeUserId = 'TECH-01';
   let pendingUserId = null;
 
   let technicians = JSON.parse(localStorage.getItem('barba_techs_v2')) || [
@@ -2604,7 +2608,8 @@ Recordamos que en *${ord.date}* realizamos servicio a su *${ord.type}* en su dom
     renderOrders();
     renderClients();
     renderTechs();
-    applyUserSession('admin');
+    // Iniciar con la sesión restringida de técnico por defecto
+    applyUserSession('TECH-01');
     initCloudListeners();
   };
 </script>
