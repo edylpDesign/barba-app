@@ -58,6 +58,41 @@
       min-height: 100vh;
     }
 
+    /* PANTALLA DE LOGIN INICIAL */
+    #view-login {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, #0b2545 0%, #134074 100%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .login-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 20px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    .login-logo {
+      width: 64px;
+      height: 64px;
+      background: #fff;
+      border-radius: 12px;
+      margin: 0 auto 12px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--secondary);
+    }
+
     /* Header */
     .app-header {
       background: var(--primary);
@@ -119,28 +154,24 @@
     }
     .cloud-dot.online { background: #4ade80; box-shadow: 0 0 5px #4ade80; }
 
-    .role-switcher {
+    .user-pill {
       display: flex;
       align-items: center;
-      gap: 5px;
-      background: rgba(255,255,255,0.14);
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
       padding: 4px 8px;
       border-radius: 20px;
-    }
-
-    .role-switcher select {
-      background: transparent;
-      border: none;
-      color: #fff;
       font-size: 11px;
       font-weight: 700;
-      outline: none;
-      cursor: pointer;
-      max-width: 130px;
     }
 
-    .role-switcher select option {
-      color: #000;
+    .btn-logout {
+      background: transparent;
+      border: none;
+      color: #fca5a5;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 2px 4px;
     }
 
     /* Views */
@@ -354,6 +385,7 @@
     /* Forms */
     .form-group {
       margin-bottom: 10px;
+      text-align: left;
     }
 
     .form-group label {
@@ -621,35 +653,6 @@
     .nav-item i { font-size: 16px; }
     .nav-item.active { color: var(--secondary); }
 
-    /* Security Modal */
-    .pin-modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.65);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 20px;
-    }
-
-    .pin-modal-content {
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      width: 100%;
-      max-width: 320px;
-      text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-    }
-
-    .pin-input {
-      letter-spacing: 6px;
-      font-size: 20px;
-      text-align: center;
-      margin: 12px 0;
-    }
-
     .admin-only {
       display: block;
     }
@@ -661,7 +664,45 @@
 <body class="is-employee">
 
 <div class="app-container">
-  <!-- Header -->
+
+  <!-- PANTALLA INICIAL OBLIGATORIA: INICIO DE SESIÓN -->
+  <div id="view-login">
+    <div class="login-card">
+      <div class="login-logo">
+        <svg viewBox="0 0 120 120" width="48" height="48">
+          <path d="M48 24 L22 38 L48 38 Z" fill="#e67e22"/>
+          <path d="M48 18 L53 38 L43 38 Z" fill="#e67e22"/>
+          <path d="M50 38 L25 38 L25 68 C25 80 40 92 50 96 L50 38 Z" fill="#e67e22"/>
+          <path d="M50 38 L75 38 L75 68 C75 80 60 92 50 96 L50 38 Z" fill="#0b2545"/>
+          <rect x="36" y="44" width="28" height="8" rx="2" fill="#ffffff"/>
+          <rect x="47" y="52" width="6" height="18" rx="1" fill="#ffffff"/>
+          <polygon points="34,60 40,60 36,68 42,68 33,78 36,70 31,70" fill="#ffffff"/>
+          <path d="M64 68 C64 63 67 60 67 60 C67 60 70 63 70 68 C70 71 67 72 67 72 C67 72 64 71 64 68 Z" fill="#ffffff"/>
+          <path d="M35 78 C40 85 45 92 50 102 C55 92 60 85 65 78 C60 82 55 86 50 86 C45 86 40 82 35 78 Z" fill="#0b2545"/>
+        </svg>
+      </div>
+      <h2 style="font-size: 16px; color: var(--primary); font-weight: 900; margin-bottom: 2px;">BARBA CONSTRUCCIONES</h2>
+      <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 18px;">Sistema de Gestión Técnica</p>
+
+      <div class="form-group">
+        <label>Selecciona tu Usuario</label>
+        <select id="login-user-select" class="form-control" onchange="onLoginUserChange(this.value)">
+          <!-- Inyectado dinámicamente -->
+        </select>
+      </div>
+
+      <div class="form-group" id="login-password-container" style="display: none;">
+        <label id="login-pass-label">Contraseña / PIN</label>
+        <input type="password" id="login-password-input" class="form-control" placeholder="••••" maxlength="6" style="text-align: center; letter-spacing: 4px; font-size: 16px;">
+      </div>
+
+      <button class="btn btn-primary" style="margin-top: 10px;" onclick="executeLogin()">
+        <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+      </button>
+    </div>
+  </div>
+
+  <!-- Header de la Aplicación -->
   <header class="app-header">
     <div class="brand">
       <div class="brand-logo-svg">
@@ -686,9 +727,11 @@
       </div>
     </div>
     
-    <div class="role-switcher">
-      <i class="fa-solid fa-user" style="font-size: 11px;"></i>
-      <select id="user-role" onchange="onUserSelectChange(this.value)"></select>
+    <div class="user-pill">
+      <span id="current-user-badge"><i class="fa-solid fa-user"></i> Técnico</span>
+      <button class="btn-logout" title="Cerrar Sesión" onclick="logoutSession()">
+        <i class="fa-solid fa-power-off"></i>
+      </button>
     </div>
   </header>
 
@@ -1162,20 +1205,6 @@
   </nav>
 </div>
 
-<!-- Modal PIN de Seguridad -->
-<div id="pin-modal" class="pin-modal">
-  <div class="pin-modal-content">
-    <i class="fa-solid fa-lock" style="font-size: 26px; color: var(--primary); margin-bottom: 8px;"></i>
-    <h3 style="font-size: 14px; font-weight: 800; color: var(--primary);" id="pin-modal-title">Acceso de Seguridad</h3>
-    <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;" id="pin-modal-desc">Ingresa tu contraseña para continuar</p>
-    <input type="password" id="security-pin-input" class="form-control pin-input" maxlength="6" placeholder="••••">
-    <div style="display:flex; gap:8px; margin-top: 10px;">
-      <button class="btn btn-outline" style="flex:1;" onclick="cancelPinModal()">Cancelar</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="verifyPinModal()">Entrar</button>
-    </div>
-  </div>
-</div>
-
 <script>
   const ADMIN_WHATSAPP = '524493898869';
   const ADMIN_PIN = '8484';
@@ -1218,9 +1247,7 @@
   let activeFinanceFilter = 'day';
   let activeClientsTab = 'active';
 
-  // Iniciar siempre como técnico por defecto
-  let activeUserId = 'TECH-01';
-  let pendingUserId = null;
+  let activeUserId = null; // No hay sesión activa por defecto
 
   let technicians = JSON.parse(localStorage.getItem('barba_techs_v2')) || [
     {
@@ -1336,90 +1363,109 @@
         technicians = [];
         snapshot.forEach(doc => technicians.push(doc.data()));
         localStorage.setItem('barba_techs_v2', JSON.stringify(technicians));
-        populateUserRoleSelect();
+        populateLoginUserSelect();
         renderTechs();
       }
     });
   }
 
-  function populateUserRoleSelect() {
-    const sel = document.getElementById('user-role');
-    sel.innerHTML = `<option value="admin">Administrador 👑</option>`;
+  /* SISTEMA DE LOGIN */
+  function populateLoginUserSelect() {
+    const sel = document.getElementById('login-user-select');
+    sel.innerHTML = `
+      <option value="">-- Selecciona quién eres --</option>
+      <option value="admin">Administrador 👑</option>
+    `;
     technicians.forEach(t => {
       sel.innerHTML += `<option value="${t.id}">${t.name} (Técnico)</option>`;
     });
-    sel.value = activeUserId;
   }
 
-  function onUserSelectChange(targetId) {
-    pendingUserId = targetId;
+  function onLoginUserChange(val) {
+    const passContainer = document.getElementById('login-password-container');
+    const passInput = document.getElementById('login-password-input');
+    const passLabel = document.getElementById('login-pass-label');
+    passInput.value = '';
 
-    if (targetId === 'admin') {
-      openPinModal('Acceso Administrador', 'Ingresa el PIN de Administrador');
-    } else {
-      const tech = technicians.find(t => t.id === targetId);
+    if (val === 'admin') {
+      passLabel.textContent = 'PIN de Administrador';
+      passContainer.style.display = 'block';
+      passInput.focus();
+    } else if (val) {
+      const tech = technicians.find(t => t.id === val);
       if (tech && tech.hasPassword) {
-        openPinModal(`Acceso: ${tech.name}`, `Ingresa la contraseña de ${tech.name}`);
+        passLabel.textContent = `Contraseña de ${tech.name}`;
+        passContainer.style.display = 'block';
+        passInput.focus();
       } else {
-        applyUserSession(targetId);
+        passContainer.style.display = 'none';
       }
+    } else {
+      passContainer.style.display = 'none';
     }
   }
 
-  function openPinModal(title, desc) {
-    document.getElementById('pin-modal-title').textContent = title;
-    document.getElementById('pin-modal-desc').textContent = desc;
-    document.getElementById('security-pin-input').value = '';
-    document.getElementById('pin-modal').style.display = 'flex';
-    document.getElementById('security-pin-input').focus();
-  }
+  function executeLogin() {
+    const userVal = document.getElementById('login-user-select').value;
+    const passInput = document.getElementById('login-password-input').value.trim();
 
-  function verifyPinModal() {
-    const inputVal = document.getElementById('security-pin-input').value.trim();
+    if (!userVal) {
+      alert('Por favor selecciona un usuario.');
+      return;
+    }
 
-    if (pendingUserId === 'admin') {
-      if (inputVal === ADMIN_PIN) {
-        document.getElementById('pin-modal').style.display = 'none';
-        applyUserSession('admin');
+    if (userVal === 'admin') {
+      if (passInput === ADMIN_PIN) {
+        applySession('admin');
       } else {
         alert('PIN de Administrador incorrecto.');
-        cancelPinModal();
+        document.getElementById('login-password-input').value = '';
       }
     } else {
-      const tech = technicians.find(t => t.id === pendingUserId);
-      if (tech && tech.password === inputVal) {
-        document.getElementById('pin-modal').style.display = 'none';
-        applyUserSession(pendingUserId);
-      } else {
-        alert('Contraseña incorrecta.');
-        cancelPinModal();
+      const tech = technicians.find(t => t.id === userVal);
+      if (tech) {
+        if (tech.hasPassword) {
+          if (tech.password === passInput) {
+            applySession(tech.id);
+          } else {
+            alert('Contraseña incorrecta.');
+            document.getElementById('login-password-input').value = '';
+          }
+        } else {
+          applySession(tech.id);
+        }
       }
     }
   }
 
-  function cancelPinModal() {
-    document.getElementById('pin-modal').style.display = 'none';
-    document.getElementById('user-role').value = activeUserId;
-    pendingUserId = null;
-  }
-
-  function applyUserSession(userId) {
+  function applySession(userId) {
     activeUserId = userId;
-    document.getElementById('user-role').value = userId;
+    document.getElementById('view-login').style.display = 'none';
 
     if (userId === 'admin') {
       document.body.classList.remove('is-employee');
+      document.getElementById('current-user-badge').innerHTML = '<i class="fa-solid fa-crown"></i> Admin';
     } else {
       document.body.classList.add('is-employee');
-      const activeView = document.querySelector('.content-view.active').id;
-      if (['view-finances', 'view-new', 'view-techs'].includes(activeView)) {
-        switchView('agenda');
-      }
+      const tech = technicians.find(t => t.id === userId);
+      document.getElementById('current-user-badge').innerHTML = `<i class="fa-solid fa-user"></i> ${tech ? tech.name : 'Técnico'}`;
     }
+
     renderOrders();
     renderClients();
+    switchView('agenda');
   }
 
+  function logoutSession() {
+    activeUserId = null;
+    document.getElementById('view-login').style.display = 'flex';
+    document.getElementById('login-user-select').value = '';
+    document.getElementById('login-password-input').value = '';
+    document.getElementById('login-password-container').style.display = 'none';
+    document.body.classList.add('is-employee');
+  }
+
+  /* TÉCNICOS */
   function showNewTechForm() {
     document.getElementById('new-tech-box').style.display = 'block';
     document.getElementById('t-name').focus();
@@ -1455,7 +1501,7 @@
     e.target.reset();
     document.getElementById('tech-password-container').style.display = 'none';
     hideNewTechForm();
-    populateUserRoleSelect();
+    populateLoginUserSelect();
     renderTechs();
     alert(`Técnico ${newTech.name} registrado con éxito.`);
   }
@@ -1496,15 +1542,12 @@
         db.collection('technicians').doc(techId).delete();
       }
       saveTechs();
-      if (activeUserId === techId) {
-        applyUserSession('admin');
-      }
-      populateUserRoleSelect();
+      populateLoginUserSelect();
       renderTechs();
     }
   }
 
-  // CALENDARIO
+  /* CALENDARIO */
   function initMonthYearSelectors() {
     const monthSel = document.getElementById('month-select');
     const yearSel = document.getElementById('year-select');
@@ -1686,7 +1729,7 @@
     });
   }
 
-  // NAVEGACIÓN
+  /* NAVEGACIÓN */
   function switchView(viewName) {
     document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
@@ -1718,7 +1761,7 @@
     }
   }
 
-  // GESTIÓN DE CLIENTES
+  /* CLIENTES */
   function switchClientsTab(tab) {
     activeClientsTab = tab;
     document.getElementById('tab-clients-active').classList.toggle('active', tab === 'active');
@@ -1992,7 +2035,7 @@
     switchView('agenda');
   }
 
-  // DETALLE DE ORDEN
+  /* DETALLE DE ORDEN */
   function openOrderDetail(id) {
     activeOrderId = id;
     const ord = orders.find(o => o.id === id);
@@ -2149,7 +2192,7 @@
     profitEl.style.color = profit >= 0 ? '#15803d' : '#b91c1c';
   }
 
-  // WHATSAPP
+  /* WHATSAPP */
   function sendArrivalWhatsApp() {
     const ord = orders.find(o => o.id === activeOrderId);
     if (!ord) return;
@@ -2294,7 +2337,7 @@ _Reporte generado automáticamente desde la App Barba Construcciones._`;
     }
   }
 
-  // FINANZAS
+  /* FINANZAS */
   function setFinanceFilter(filter, el) {
     activeFinanceFilter = filter;
     document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
@@ -2553,7 +2596,7 @@ Recordamos que en *${ord.date}* realizamos servicio a su *${ord.type}* en su dom
     document.body.removeChild(link);
   }
 
-  // CANVAS
+  /* CANVAS FIRMA */
   let canvas, ctx, drawing = false;
 
   function setupCanvas() {
@@ -2602,14 +2645,12 @@ Recordamos que en *${ord.date}* realizamos servicio a su *${ord.type}* en su dom
   }
 
   window.onload = () => {
-    populateUserRoleSelect();
+    populateLoginUserSelect();
     initMonthYearSelectors();
     renderCalendar();
     renderOrders();
     renderClients();
     renderTechs();
-    // Iniciar con la sesión restringida de técnico por defecto
-    applyUserSession('TECH-01');
     initCloudListeners();
   };
 </script>
